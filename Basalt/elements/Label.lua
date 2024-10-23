@@ -45,12 +45,12 @@ end)
 --- @return Label
 ---@protected
 function Label:new(id, parent, basalt)
-
     local newInstance = VisualElement:new(id, parent, basalt)
     setmetatable(newInstance, self)
     self.__index = self
     newInstance:setType("Label")
     newInstance:create("Label")
+    newInstance:setSize(newInstance:getText():len(), 1)
     return newInstance
 end
 
