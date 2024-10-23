@@ -196,6 +196,52 @@ function Container:getChild(id)
     end
 end
 
+--- Gets a nested element with the specified id 
+--- @param self Container
+--- @param id string The id of the element.
+function Container:getElementById(id)
+    expect(1, self, "table")
+    expect(2, id, "string", "table")
+
+    for _, childObj in ipairs(self.children) do
+        if childObj:getId() == id then
+            return childObj
+        end
+
+        if childObj.children then
+            local foundObj = childObj:getElementById(id)
+            if foundObj then
+                return foundObj
+            end
+        end
+    end
+end
+
+--- Gets all nested elements with the specified type 
+--- @param self Container
+--- @param type string The type of the elements.
+function Container:getElementsByType(targetType)
+    expect(1, self, "table")
+    expect(2, targetType, "string")
+
+    local matchingElements = {}
+
+    local function collectMatchingElements(ele, depth)
+        if ele.__debugElement then return end
+        if ele:getType() == targetType then 
+            table.insert(matchingElements, ele)
+        end
+        if ele.children then
+            for _, childObj in ipairs(ele.children) do
+                collectMatchingElements(childObj, depth + 1)
+            end
+        end
+    end
+
+    collectMatchingElements(self, 0)
+    return matchingElements
+end
+
 --- Adds a child to the container.
 --- @param self Container
 --- @param child table The child to add.
@@ -355,7 +401,7 @@ end
 function Container:updateChild(child)
     expect(1, self, "table")
     expect(2, child, "table")
-    if not child or type(child) ~= "table" then
+    if not child or type(child) ~= "table" or not child.initialized then
         return
     end
 

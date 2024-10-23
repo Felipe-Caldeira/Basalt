@@ -98,8 +98,8 @@ local function dynamicValue(element, name, dynamicString)
         end
 
         if (k ~= "self" and k ~= "parent") and (protectedNames[k] == nil) then
-            local ele = element:getParent():getChild(k)
-            if (ele == nil) then error("Dynamic Values - reference not found: " .. '"' .. k .. '"') end
+            local ele = element:getRoot():getElementById(k)
+            if (ele == nil) then error("Dynamic Values - unable to find element: " .. k) end
             for _, b in pairs(v) do
                 ele:addPropertyObserver(b, updateFunc)
                 table.insert(observers, {ele = ele, name = b})
@@ -126,7 +126,7 @@ local function dynamicValue(element, name, dynamicString)
             end
 
             if (k ~= "self") and (k ~= "parent") and (protectedNames[k] == nil) then
-                local ele = parent:getChild(k)
+                local ele = parent:getRoot():getElementById(k)
                 if (ele == nil) then
                     error("Dynamic Values - unable to find element: " .. k)
                 end

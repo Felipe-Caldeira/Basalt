@@ -300,6 +300,16 @@ function Element:combineProperty(name, ...)
     return self
 end
 
+--- Gets the root of the element
+--- @param self Element
+function Element:getRoot()
+    expect(1, self, "table")
+    if self.parent ~= nil then
+        return self.parent:getRoot()
+    end
+    return self
+end
+
 ---@protected
 function Element:initialize(typ)
     activeType = typ

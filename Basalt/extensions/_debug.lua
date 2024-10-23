@@ -20,6 +20,8 @@ local function openDebugPanel()
         if (debug.basalt.extensionExists("borders")) then
             debug.frames[id].window:setBorder(true)
         end
+        debug.frames[id].window.__debugElement = true
+        debug.frames[id].label.__debugElement = true
     end
     return debug.frames[id]
 end
