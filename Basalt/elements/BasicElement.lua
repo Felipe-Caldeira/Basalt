@@ -34,7 +34,7 @@ function Element:new(id, parent, basalt)
     newInstance:create("BasicElement")
     newInstance.parent = parent
     newInstance.basalt = basalt
-    newInstance.Name = id or uuid()
+    newInstance.id = id or uuid()
     return newInstance
 end
 
@@ -436,7 +436,7 @@ function Element:callExtension(name)
     return self
 end
 
-Element:addProperty("Name", "string", "BasicElement")
+Element:addProperty("id", "string", "BasicElement")
 
 Element:addProperty("type", "string|table", {"BasicElement"}, false, function(self, value)
     if(type(value)=="string")then

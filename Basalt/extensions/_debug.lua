@@ -3,7 +3,7 @@ local debug = {frames={}}
 
 local function openDebugPanel()
     local mainFrame = debug.basalt.getMainFrame()
-    local id = mainFrame:getName()
+    local id = mainFrame:getId()
     if(debug.frames[id]==nil)then
         debug.frames[id] = {}
         debug.frames[id].window = mainFrame:addMovableFrame():setSize(45, 14):setBackground(colors.cyan):setZ(100):setVisible(false)

@@ -172,14 +172,14 @@ function Container:forceVisibleChildrenUpdate()
   end
 end
 
---- Gets a child by its name.
+--- Gets a child by its id.
 --- @param self Container
---- @param name string The name of the child.
-function Container:getChild(name)
+--- @param id string The id of the child.
+function Container:getChild(id)
   expect(1, self, "table")
-  expect(2, name, "string", "table")
+  expect(2, id, "string", "table")
   for _, childObj in ipairs(self.children) do
-    if childObj:getName() == name then
+    if childObj:getId() == id then
       return childObj
     end
   end
@@ -221,15 +221,15 @@ end
 
 --- Removes a child from the container.
 --- @param self Container
---- @param childName string The name of the child.
-function Container:removeChild(childName)
+--- @param id string The id of the child.
+function Container:removeChild(id)
   expect(1, self, "table")
-  expect(2, childName, "string", "table")
-  if(type(childName)=="table")then
-    childName = childName:getName()
+  expect(2, id, "string", "table")
+  if(type(id)=="table")then
+    id = id:getId()
   end
   for i, childObj in ipairs(self.children) do
-    if childObj:getName() == childName then
+    if childObj:getId() == id then
       table.remove(self.children, i)
       break
     end
