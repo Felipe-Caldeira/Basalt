@@ -18,13 +18,13 @@ Progressbar:addProperty("maxValue", "number", 100)
 --- @return Progressbar
 ---@protected
 function Progressbar:new(id, parent, basalt)
-  local newInstance = VisualElement:new(id, parent, basalt)
-  setmetatable(newInstance, self)
-  self.__index = self
-  newInstance:setType("Progressbar")
-  newInstance:create("Progressbar")
-  newInstance:setSize(20, 3)
-  return newInstance
+    local newInstance = VisualElement:new(id, parent, basalt)
+    setmetatable(newInstance, self)
+    self.__index = self
+    newInstance:setType("Progressbar")
+    newInstance:create("Progressbar")
+    newInstance:setSize(20, 3)
+    return newInstance
 end
 
 ---@protected

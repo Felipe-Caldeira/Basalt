@@ -14,8 +14,6 @@ Diagram:addProperty("maxAmount", "number", 20)
 Diagram:addProperty("zoom", "number", 0)
 Diagram:addProperty("autoZoom", "boolean", true)
 
-
-
 --- Creates a new Diagram.
 ---@param id string The id of the object.
 ---@param parent? Container The parent of the object.
@@ -31,7 +29,7 @@ function Diagram:new(id, parent, basalt)
     newInstance:create("Diagram")
     newInstance:setZ(10)
     newInstance:setSize(24, 8)
-  return newInstance
+    return newInstance
 end
 
 ---@protected
@@ -42,7 +40,7 @@ function Diagram:render()
     local zoom = self:getZoom()
     local width, height = self:getSize()
 
-    for k,v in ipairs(data) do
+    for k, v in ipairs(data) do
         if k > maxAmount or k > width then
             break
         end
@@ -60,7 +58,7 @@ function Diagram:getMax()
     local maxAmount = self:getMaxAmount()
     local width = self:getWidth()
     local max = 0
-    for k,v in ipairs(self:getData()) do
+    for k, v in ipairs(self:getData()) do
         if k > maxAmount or k > width then
             break
         end

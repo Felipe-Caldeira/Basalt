@@ -7,7 +7,6 @@ local tHex = require("utils").tHex
 local Menubar = setmetatable({}, List)
 Menubar.__index = Menubar
 
-
 Menubar:initialize("Menubar")
 Menubar:addProperty("spacing", "number", 1)
 
@@ -29,8 +28,8 @@ end
 
 ---@protected
 function Menubar:mouse_click(button, x, y)
-    if(VisualElement.mouse_click(self, button, x, y)) then
-        if(button == 1) then
+    if (VisualElement.mouse_click(self, button, x, y)) then
+        if (button == 1) then
             local cumulativeWidth = self.x
             for i = self.scrollIndex, #self.items do
                 local itemWidth = #self.items[i] + self.spacing
@@ -72,7 +71,7 @@ end
 
 ---@protected
 function Menubar:mouse_scroll(direction, x, y)
-    if(VisualElement.mouse_scroll(self, direction, x, y)) then
+    if (VisualElement.mouse_scroll(self, direction, x, y)) then
         if direction == 1 and self.scrollIndex < #self.items - self:getVisibleItems() + 1 then
             self.scrollIndex = self.scrollIndex + 1
         elseif direction == -1 and self.scrollIndex > 1 then

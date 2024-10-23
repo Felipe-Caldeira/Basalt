@@ -30,7 +30,7 @@ function Checkbox:new(id, parent, basalt)
     newInstance:setType("Checkbox")
     newInstance:create("Checkbox")
     newInstance:setSize(1, 1)
-  return newInstance
+    return newInstance
 end
 
 ---@protected
@@ -51,8 +51,8 @@ end)
 
 ---@protected
 function Checkbox:mouse_click(button, x, y)
-    if(VisualElement.mouse_click(self, button, x, y))then
-        if(button == 1)then
+    if (VisualElement.mouse_click(self, button, x, y)) then
+        if (button == 1) then
             self:setChecked(not self:getChecked())
             self:fireEvent("check", self:getChecked())
             self:updateRender()

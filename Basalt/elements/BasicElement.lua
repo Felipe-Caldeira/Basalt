@@ -4,11 +4,14 @@ local uuid = require("utils").uuid
 local expect = require("expect").expect
 
 ---@class BasicElement
-local Element = {__tostring = function(self)
-    return self.type[1]
-end, __type = function(self)
-    return self.type[1]
-end}
+local Element = {
+    __tostring = function(self)
+        return self.type[1]
+    end,
+    __type = function(self)
+        return self.type[1]
+    end
+}
 Element.__index = Element
 
 local properties = {}
@@ -66,11 +69,11 @@ function Element:removePropertyObserver(propertyName, index)
     if not self.propertyObservers[propertyName] then
         return self
     end
-    if(type(index)=="number")then
+    if (type(index) == "number") then
         table.remove(self.propertyObservers[propertyName], index)
     else
-        for k,v in pairs(self.propertyObservers[propertyName])do
-            if(v==index)then
+        for k, v in pairs(self.propertyObservers[propertyName]) do
+            if (v == index) then
                 table.remove(self.propertyObservers[propertyName], k)
             end
         end
@@ -88,8 +91,8 @@ function Element:forcePropertyObserverUpdate(propertyName)
     if not self.propertyObservers[propertyName] then
         return self
     end
-    for _,v in pairs(self.propertyObservers[propertyName])do
-        if(type(v)=="function")then
+    for _, v in pairs(self.propertyObservers[propertyName]) do
+        if (type(v) == "function") then
             v(self, propertyName)
         end
     end
@@ -106,19 +109,19 @@ function Element:setProperty(name, value, rule)
     expect(1, self, "table")
     expect(2, name, "string")
     expect(4, rule, "function", "nil")
-    if(rule~=nil)then
+    if (rule ~= nil) then
         value = rule(self, name, value)
     end
     if type(value) == 'table' then
         value = deepcopy(value)
     end
 
-    if(self[name]~=value)then
+    if (self[name] ~= value) then
         self[name] = value
     end
 
-    if(self.propertyObservers[name]~=nil)then
-        for _,v in pairs(self.propertyObservers[name])do
+    if (self.propertyObservers[name] ~= nil) then
+        for _, v in pairs(self.propertyObservers[name]) do
             v(self, name, value)
         end
     end
@@ -130,14 +133,14 @@ end
 ---@param name string
 ---@return any
 function Element:getProperty(name)
-    if(type(self)~="table")then
+    if (type(self) ~= "table") then
         error("getProperty called on non-table value")
     end
-    if(type(name)~="string")then
+    if (type(name) ~= "string") then
         error("getProperty called with non-string value")
     end
     local prop = self[name]
-    if(type(prop)=="function")then
+    if (type(prop) == "function") then
         return prop()
     end
     return prop
@@ -149,7 +152,7 @@ end
 function Element:hasProperty(name)
     expect(1, self, "table")
     expect(2, name, "string")
-    return self[name]~=nil
+    return self[name] ~= nil
 end
 
 --- Sets multiple properties of the element
@@ -159,7 +162,7 @@ end
 function Element:setProperties(properties)
     expect(1, self, "table")
     expect(2, properties, "table")
-    for k,v in pairs(properties) do
+    for k, v in pairs(properties) do
         self[k] = v
     end
     return self
@@ -171,8 +174,8 @@ end
 function Element:getProperties()
     expect(1, self, "table")
     local p = {}
-    for k,v in pairs(self)do
-        if(type(v)=="function")then
+    for k, v in pairs(self) do
+        if (type(v) == "function") then
             p[k] = v()
         else
             p[k] = v
@@ -188,9 +191,9 @@ end
 function Element:getPropertyType(name)
     expect(1, self, "table")
     expect(2, name, "string")
-    for _,v in pairs(self.type)do
-        if(propertyTypes[v]~=nil)then
-            if(propertyTypes[v][name]~=nil)then
+    for _, v in pairs(self.type) do
+        if (propertyTypes[v] ~= nil) then
+            if (propertyTypes[v][name] ~= nil) then
                 return propertyTypes[v][name]
             end
         end
@@ -201,7 +204,7 @@ end
 ---@param self BasicElement
 ---@protected
 function Element:updateRender()
-    if(self.parent~=nil)then
+    if (self.parent ~= nil) then
         self.parent:forceVisibleChildrenUpdate()
         self.parent:updateRender()
     else
@@ -220,42 +223,46 @@ end
 ---@param ignRenderUpdate? boolean -- If the render update should be ignored
 ---@protected
 function Element:addProperty(name, typ, defaultValue, readonly, setLogic, getLogic, ignRenderUpdate)
-    if(typ==nil)then typ = "any" end
-    if(readonly==nil)then readonly = false end
+    if (typ == nil) then
+        typ = "any"
+    end
+    if (readonly == nil) then
+        readonly = false
+    end
 
     local fName = name:gsub("^%l", string.upper)
     if not properties[activeType] then
         properties[activeType] = {}
         propertyTypes[activeType] = {}
     end
-    if(type(defaultValue)=="table")then
+    if (type(defaultValue) == "table") then
         defaultValue = deepcopy(defaultValue)
     end
     properties[activeType][name] = defaultValue
     propertyTypes[activeType][name] = typ
 
-    if not(readonly)then
-        self["set"..fName] = function(self, value, ...)
+    if not (readonly) then
+        self["set" .. fName] = function(self, value, ...)
             expect(1, self, "table")
-            if(setLogic~=nil)then
+            if (setLogic ~= nil) then
                 local modifiedVal = setLogic(self, value, ...)
-                if(modifiedVal~=nil)then
+                if (modifiedVal ~= nil) then
                     value = modifiedVal
                 end
             end
-            if ignRenderUpdate~=true then
+            if ignRenderUpdate ~= true then
                 self:updateRender()
             end
-            if(typ~=nil)then
+            if (typ ~= nil) then
                 expect(2, value, "function", "dynValue", unpack(split(typ, "|")))
             end
             self:setProperty(name, value)
             return self
         end
     end
-    self["get"..fName] = function(self, ...)
+    self["get" .. fName] = function(self, ...)
         local prop = self:getProperty(name)
-        if(getLogic~=nil)then
+        if (getLogic ~= nil) then
             return getLogic(self, prop, ...)
         end
         return prop
@@ -273,18 +280,18 @@ function Element:combineProperty(name, ...)
     local args = {...}
     self["get" .. name] = function(self)
         local result = {}
-        for _,v in pairs(args)do
-            result[#result+1] = self["get" .. v:gsub("^%l", string.upper)](self)
+        for _, v in pairs(args) do
+            result[#result + 1] = self["get" .. v:gsub("^%l", string.upper)](self)
         end
         return unpack(result)
     end
     self["set" .. name] = function(self, ...)
         expect(1, self, "table")
         local values = {...}
-        for k,v in pairs(args)do
+        for k, v in pairs(args) do
             local propertyType = self:getPropertyType(v)
-            if(propertyType~=nil)then
-                expect(k+1, values[k], self:getPropertyType(v), "function", "dynValue")
+            if (propertyType ~= nil) then
+                expect(k + 1, values[k], self:getPropertyType(v), "function", "dynValue")
             end
             self["set" .. v:gsub("^%l", string.upper)](self, values[k])
         end
@@ -302,9 +309,9 @@ end
 --- This method is meant for internal usage only, it copys the properties from the template
 ---@protected
 function Element:create(typ)
-    if(properties[typ]~=nil)then
-        for k,v in pairs(properties[typ])do
-            if(type(v)=="table")then
+    if (properties[typ] ~= nil) then
+        for k, v in pairs(properties[typ]) do
+            if (type(v) == "table") then
                 self[k] = deepcopy(v)
             else
                 self[k] = v
@@ -313,18 +320,17 @@ function Element:create(typ)
     end
 end
 
-
 --- Adds a event listener to the element like :create this method is meant for internal usage only
 ---@protected
 function Element:addListener(name, event)
-    self["on"..name:gsub("^%l", string.upper)] = function(self, ...)
+    self["on" .. name:gsub("^%l", string.upper)] = function(self, ...)
         expect(1, self, "table")
-        for k,f in pairs({...})do
-            expect(k+1, f, "function")
-            if(self.listeners==nil)then
+        for k, f in pairs({...}) do
+            expect(k + 1, f, "function")
+            if (self.listeners == nil) then
                 self.listeners = {}
             end
-            if(self.listeners[name]==nil)then
+            if (self.listeners[name] == nil) then
                 self.listeners[name] = {}
             end
             table.insert(self.listeners[name], f)
@@ -332,7 +338,7 @@ function Element:addListener(name, event)
         self:listenEvent(event)
         return self
     end
-return self
+    return self
 end
 
 --- Fires an event
@@ -344,9 +350,9 @@ end
 function Element:fireEvent(name, ...)
     expect(1, self, "table")
     expect(2, name, "string")
-    if(self.listeners~=nil)then
-        if(self.listeners[name]~=nil)then
-            for _,v in pairs(self.listeners[name])do
+    if (self.listeners ~= nil) then
+        if (self.listeners[name] ~= nil) then
+            for _, v in pairs(self.listeners[name]) do
                 v(self, ...)
             end
         end
@@ -360,9 +366,9 @@ end
 ---@return boolean
 function Element:isType(typ)
     -- can't use expect here because it would cause a stack overflow
-    if(self.type~=nil)then
-        for _,v in pairs(self.type)do
-            if(v==typ)then
+    if (self.type ~= nil) then
+        for _, v in pairs(self.type) do
+            if (v == typ) then
                 return true
             end
         end
@@ -379,11 +385,11 @@ function Element:listenEvent(event, active)
     expect(1, self, "table")
     expect(2, event, "string")
     expect(3, active, "boolean", "nil")
-    if(self.parent~=nil)then
-        if(active)or(active==nil)then
+    if (self.parent ~= nil) then
+        if (active) or (active == nil) then
             self.parent:addEvent(event, self)
             self.events[event] = true
-        elseif(active==false)then
+        elseif (active == false) then
             self.parent:removeEvent(event, self)
             self.events[event] = false
         end
@@ -396,9 +402,9 @@ end
 ---@return self
 function Element:updateEvents()
     expect(1, self, "table")
-    if(self.parent~=nil)then
-        for k,v in pairs(self.events)do
-            if(v)then
+    if (self.parent ~= nil) then
+        for k, v in pairs(self.events) do
+            if (v) then
                 self.parent:addEvent(k, self)
             else
                 self.parent:removeEvent(k, self)
@@ -411,10 +417,10 @@ end
 --- This method is meant for internal usage only
 ---@protected
 function Element:extend(name, f)
-    if(extensions[activeType]==nil)then
+    if (extensions[activeType] == nil) then
         extensions[activeType] = {}
     end
-    if(extensions[activeType][name]==nil)then
+    if (extensions[activeType][name] == nil) then
         extensions[activeType][name] = {}
     end
     table.insert(extensions[activeType][name], f)
@@ -424,10 +430,10 @@ end
 --- Calls an extension - meant for internal/extension usage only
 ---@protected
 function Element:callExtension(name)
-    for _,t in pairs(self.type)do
-        if(extensions[t]~=nil)then
-            if(extensions[t][name]~=nil)then
-                for _,v in pairs(extensions[t][name])do
+    for _, t in pairs(self.type) do
+        if (extensions[t] ~= nil) then
+            if (extensions[t][name] ~= nil) then
+                for _, v in pairs(extensions[t][name]) do
                     v(self)
                 end
             end
@@ -439,12 +445,11 @@ end
 Element:addProperty("id", "string", "BasicElement")
 
 Element:addProperty("type", "string|table", {"BasicElement"}, false, function(self, value)
-    if(type(value)=="string")then
+    if (type(value) == "string") then
         table.insert(self.type, 1, value)
         return self.type
     end
-end,
-function(self, _, depth)
+end, function(self, _, depth)
     return self.type[depth or 1]
 end)
 Element:addProperty("z", "number", 1, false, function(self, value)

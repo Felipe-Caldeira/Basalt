@@ -1,11 +1,11 @@
 local tHex = require("utils").tHex
-local sub,rep,max,min,unpack = string.sub,string.rep,math.max,math.min,table.unpack
+local sub, rep, max, min, unpack = string.sub, string.rep, math.max, math.min, table.unpack
 
 local subrenderData = {}
 local subrenderDataCount = 0
 local function cSub(s, i, j)
     local key = s .. i .. j
-    if(subrenderDataCount > 100)then
+    if (subrenderDataCount > 100) then
         subrenderData = {}
         subrenderDataCount = 0
     end
@@ -26,7 +26,7 @@ return function(drawTerm)
     local emptySpaceLine
     local emptyColorLines = {}
     local forcedRender = false
-    
+
     local function createEmptyLines()
         emptySpaceLine = rep(" ", width)
         for n = 0, 15 do
@@ -46,9 +46,12 @@ return function(drawTerm)
         for currentY = 1, height do
             renderData[currentY] = renderData[currentY] or {}
             cache[currentY] = cache[currentY] or {}
-            renderData[currentY][1] = sub(renderData[currentY][1] == nil and emptyText or renderData[currentY][1] .. emptyText:sub(1, width - renderData[currentY][1]:len()), 1, width)
-            renderData[currentY][2] = sub(renderData[currentY][2] == nil and emptyFG or renderData[currentY][2] .. emptyFG:sub(1, width - renderData[currentY][2]:len()), 1, width)
-            renderData[currentY][3] = sub(renderData[currentY][3] == nil and emptyBG or renderData[currentY][3] .. emptyBG:sub(1, width - renderData[currentY][3]:len()), 1, width)
+            renderData[currentY][1] = sub(renderData[currentY][1] == nil and emptyText or renderData[currentY][1] ..
+                                              emptyText:sub(1, width - renderData[currentY][1]:len()), 1, width)
+            renderData[currentY][2] = sub(renderData[currentY][2] == nil and emptyFG or renderData[currentY][2] ..
+                                              emptyFG:sub(1, width - renderData[currentY][2]:len()), 1, width)
+            renderData[currentY][3] = sub(renderData[currentY][3] == nil and emptyBG or renderData[currentY][3] ..
+                                              emptyBG:sub(1, width - renderData[currentY][3]:len()), 1, width)
             modifiedLines[currentY] = true
         end
     end
@@ -77,7 +80,8 @@ return function(drawTerm)
                         newCacheFG = newCacheFG .. cSub(oldCache[2], x + #t, width)
                         newCacheBG = newCacheBG .. cSub(oldCache[3], x + #t, width)
                     end
-                    if(renderData[y][1]~=newCacheT or renderData[y][2]~=newCacheFG or renderData[y][3]~=newCacheBG)then
+                    if (renderData[y][1] ~= newCacheT or renderData[y][2] ~= newCacheFG or renderData[y][3] ~=
+                        newCacheBG) then
                         renderData[y][1] = newCacheT
                         renderData[y][2] = newCacheFG
                         renderData[y][3] = newCacheBG
@@ -97,7 +101,7 @@ return function(drawTerm)
             if x + #str <= width then
                 newCache = newCache .. cSub(oldCache, x + #str, width)
             end
-            if(renderData[y][renderDataType]~=newCache)then
+            if (renderData[y][renderDataType] ~= newCache) then
                 renderData[y][renderDataType] = newCache
                 modifiedLines[y] = true
             end
@@ -127,8 +131,8 @@ return function(drawTerm)
         end,
 
         drawBackgroundBox = function(x, y, width, height, bgCol)
-            local colorStr = rep(type(bgCol)=="string" and bgCol or tHex[bgCol], width)
-            if(type(bgCol)=="string")and(#bgCol>1)then
+            local colorStr = rep(type(bgCol) == "string" and bgCol or tHex[bgCol], width)
+            if (type(bgCol) == "string") and (#bgCol > 1) then
                 colorStr = sub(colorStr, 1, width)
             end
             for n = 1, height do
@@ -136,8 +140,8 @@ return function(drawTerm)
             end
         end,
         drawForegroundBox = function(x, y, width, height, fgCol)
-            local colorStr = rep(type(fgCol)=="string" and fgCol or tHex[fgCol], width)
-            if(type(fgCol)=="string")and(#fgCol>1)then
+            local colorStr = rep(type(fgCol) == "string" and fgCol or tHex[fgCol], width)
+            if (type(fgCol) == "string") and (#fgCol > 1) then
                 colorStr = sub(colorStr, 1, width)
             end
             for n = 1, height do
@@ -146,7 +150,7 @@ return function(drawTerm)
         end,
         drawTextBox = function(x, y, width, height, symbol)
             local textStr = rep(symbol, width)
-            if(#symbol>1)then
+            if (#symbol > 1) then
                 textStr = sub(textStr, 1, width)
             end
             for n = 1, height do
@@ -162,7 +166,7 @@ return function(drawTerm)
             end
             terminal.setCursorBlink(false)
             for n = 1, height do
-                if(forcedRender)then
+                if (forcedRender) then
                     cache[n][1] = renderData[n][1]
                     cache[n][2] = renderData[n][2]
                     cache[n][3] = renderData[n][3]
@@ -170,8 +174,9 @@ return function(drawTerm)
                     terminal.blit(unpack(renderData[n]))
                     modifiedLines[n] = false
                 else
-                    if(modifiedLines[n])then
-                        if((cache[n][1]~=renderData[n][1])or(cache[n][2]~=renderData[n][2])or(cache[n][3]~=renderData[n][3]))or(forcedRender)then
+                    if (modifiedLines[n]) then
+                        if ((cache[n][1] ~= renderData[n][1]) or (cache[n][2] ~= renderData[n][2]) or
+                            (cache[n][3] ~= renderData[n][3])) or (forcedRender) then
                             cache[n][1] = renderData[n][1]
                             cache[n][2] = renderData[n][2]
                             cache[n][3] = renderData[n][3]
@@ -194,7 +199,7 @@ return function(drawTerm)
 
         setTerm = function(newTerm)
             terminal = newTerm
-        end,
+        end
     }
     return drawHelper
 end

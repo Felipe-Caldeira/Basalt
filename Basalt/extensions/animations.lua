@@ -1,4 +1,4 @@
-local floor,sin,cos,pi,sqrt,pow = math.floor,math.sin,math.cos,math.pi,math.sqrt,math.pow
+local floor, sin, cos, pi, sqrt, pow = math.floor, math.sin, math.cos, math.pi, math.sqrt, math.pow
 
 -- You can find the easings here https://easings.net
 
@@ -41,85 +41,83 @@ end
 local function easeInBack(t)
     local c1 = 1.70158;
     local c3 = c1 + 1
-    return c3*t^3-c1*t^2
+    return c3 * t ^ 3 - c1 * t ^ 2
 end
 
 local function easeInCubic(t)
-    return t^3
+    return t ^ 3
 end
 
 local function easeInElastic(t)
-    local c4 = (2*pi)/3;
-    return t == 0 and 0 or (t == 1 and 1 or (
-        -2^(10*t-10)*sin((t*10-10.75)*c4)
-    ))
+    local c4 = (2 * pi) / 3;
+    return t == 0 and 0 or (t == 1 and 1 or (-2 ^ (10 * t - 10) * sin((t * 10 - 10.75) * c4)))
 end
 
 local function easeInExpo(t)
-    return t == 0 and 0 or 2^(10*t-10)
+    return t == 0 and 0 or 2 ^ (10 * t - 10)
 end
 
 local function easeInOutBack(t)
     local c1 = 1.70158;
     local c2 = c1 * 1.525;
-    return t < 0.5 and ((2*t)^2*((c2+1)*2*t-c2))/2 or ((2*t-2)^2*((c2+1)*(t*2-2)+c2)+2)/2
+    return t < 0.5 and ((2 * t) ^ 2 * ((c2 + 1) * 2 * t - c2)) / 2 or ((2 * t - 2) ^ 2 * ((c2 + 1) * (t * 2 - 2) + c2) + 2) / 2
 end
 
 local function easeInOutCubic(t)
-    return t < 0.5 and 4 * t^3 or 1-(-2*t+2)^3 / 2
+    return t < 0.5 and 4 * t ^ 3 or 1 - (-2 * t + 2) ^ 3 / 2
 end
 
 local function easeInOutElastic(t)
-    local c5 = (2*pi) / 4.5
-    return t==0 and 0 or (t == 1 and 1 or (t < 0.5 and -(2^(20*t-10) * sin((20*t - 11.125) * c5))/2 or (2^(-20*t+10) * sin((20*t - 11.125) * c5))/2 + 1))
+    local c5 = (2 * pi) / 4.5
+    return t == 0 and 0 or (t == 1 and 1 or (t < 0.5 and -(2 ^ (20 * t - 10) * sin((20 * t - 11.125) * c5)) / 2 or (2 ^ (-20 * t + 10) * sin((20 * t - 11.125) * c5)) / 2 + 1))
 end
 
 local function easeInOutExpo(t)
-    return t == 0 and 0 or (t == 1 and 1 or (t < 0.5 and 2^(20*t-10)/2 or (2-2^(-20*t+10)) /2))
+    return t == 0 and 0 or (t == 1 and 1 or (t < 0.5 and 2 ^ (20 * t - 10) / 2 or (2 - 2 ^ (-20 * t + 10)) / 2))
 end
 
 local function easeInOutQuad(t)
-    return t < 0.5 and 2*t^2 or 1-(-2*t+2)^2/2
+    return t < 0.5 and 2 * t ^ 2 or 1 - (-2 * t + 2) ^ 2 / 2
 end
 
 local function easeInOutQuart(t)
-    return t < 0.5 and 8*t^4 or 1 - (-2*t+2)^4 / 2
+    return t < 0.5 and 8 * t ^ 4 or 1 - (-2 * t + 2) ^ 4 / 2
 end
 
 local function easeInOutQuint(t)
-    return t < 0.5 and 16*t^5 or 1-(-2*t+2)^5 / 2
+    return t < 0.5 and 16 * t ^ 5 or 1 - (-2 * t + 2) ^ 5 / 2
 end
 
 local function easeInQuad(t)
-    return t^2
+    return t ^ 2
 end
 
 local function easeInQuart(t)
-    return t^4
+    return t ^ 4
 end
 
 local function easeInQuint(t)
-    return t^5
+    return t ^ 5
 end
 
 local function easeOutBack(t)
     local c1 = 1.70158;
     local c3 = c1 + 1
-    return 1+c3*(t-1)^3+c1*(t-1)^2
+    return 1 + c3 * (t - 1) ^ 3 + c1 * (t - 1) ^ 2
 end
 
 local function easeOutCubic(t)
-    return 1 - (1-t)^3
+    return 1 - (1 - t) ^ 3
 end
 
 local function easeOutElastic(t)
-    local c4 = (2*pi)/3;
+    local c4 = (2 * pi) / 3;
 
-    return t == 0 and 0 or (t == 1 and 1 or (2^(-10*t)*sin((t*10-0.75)*c4)+1))
+    return t == 0 and 0 or (t == 1 and 1 or (2 ^ (-10 * t) * sin((t * 10 - 0.75) * c4) + 1))
 end
 
 local function easeOutExpo(t)
-    return t == 1 and 1 or 1-2^(-10*t)
+    return t == 1 and 1 or 1 - 2 ^ (-10 * t)
 end
 
 local function easeOutQuad(t)
@@ -127,11 +125,11 @@ local function easeOutQuad(t)
 end
 
 local function easeOutQuart(t)
-    return 1 - (1-t)^4
+    return 1 - (1 - t) ^ 4
 end
 
 local function easeOutQuint(t)
-    return 1 - (1 - t)^5
+    return 1 - (1 - t) ^ 5
 end
 
 local function easeInCirc(t)
@@ -150,12 +148,12 @@ local function easeOutBounce(t)
     local n1 = 7.5625;
     local d1 = 2.75;
 
-    if (t < 1 / d1)then
+    if (t < 1 / d1) then
         return n1 * t * t
-    elseif (t < 2 / d1)then
+    elseif (t < 2 / d1) then
         local a = t - 1.5 / d1
         return n1 * a * a + 0.75;
-    elseif (t < 2.5 / d1)then
+    elseif (t < 2.5 / d1) then
         local a = t - 2.25 / d1
         return n1 * a * a + 0.9375;
     else
@@ -175,40 +173,40 @@ end
 local lerp = {
     linear = linear,
     lerp = lerp,
-    flip=flip,
-    easeIn=easeIn,
+    flip = flip,
+    easeIn = easeIn,
     easeInSine = easeInSine,
-    easeInBack=easeInBack,
-    easeInCubic=easeInCubic,
-    easeInElastic=easeInElastic,
-    easeInExpo=easeInExpo,
-    easeInQuad=easeInQuad,
-    easeInQuart=easeInQuart,
-    easeInQuint=easeInQuint,
-    easeInCirc=easeInCirc,
-    easeInBounce=easeInBounce,
-    easeOut=easeOut,
+    easeInBack = easeInBack,
+    easeInCubic = easeInCubic,
+    easeInElastic = easeInElastic,
+    easeInExpo = easeInExpo,
+    easeInQuad = easeInQuad,
+    easeInQuart = easeInQuart,
+    easeInQuint = easeInQuint,
+    easeInCirc = easeInCirc,
+    easeInBounce = easeInBounce,
+    easeOut = easeOut,
     easeOutSine = easeOutSine,
-    easeOutBack=easeOutBack,
-    easeOutCubic=easeOutCubic,
-    easeOutElastic=easeOutElastic,
-    easeOutExpo=easeOutExpo,
-    easeOutQuad=easeOutQuad,
-    easeOutQuart=easeOutQuart,
-    easeOutQuint=easeOutQuint,
-    easeOutCirc=easeOutCirc,
-    easeOutBounce=easeOutBounce,
-    easeInOut=easeInOut,
+    easeOutBack = easeOutBack,
+    easeOutCubic = easeOutCubic,
+    easeOutElastic = easeOutElastic,
+    easeOutExpo = easeOutExpo,
+    easeOutQuad = easeOutQuad,
+    easeOutQuart = easeOutQuart,
+    easeOutQuint = easeOutQuint,
+    easeOutCirc = easeOutCirc,
+    easeOutBounce = easeOutBounce,
+    easeInOut = easeInOut,
     easeInOutSine = easeInOutSine,
-    easeInOutBack=easeInOutBack,
-    easeInOutCubic=easeInOutCubic,
-    easeInOutElastic=easeInOutElastic,
-    easeInOutExpo=easeInOutExpo,
-    easeInOutQuad=easeInOutQuad,
-    easeInOutQuart=easeInOutQuart,
-    easeInOutQuint=easeInOutQuint,
-    easeInOutCirc=easeInOutCirc,
-    easeInOutBounce=easeInOutBounce,
+    easeInOutBack = easeInOutBack,
+    easeInOutCubic = easeInOutCubic,
+    easeInOutElastic = easeInOutElastic,
+    easeInOutExpo = easeInOutExpo,
+    easeInOutQuad = easeInOutQuad,
+    easeInOutQuart = easeInOutQuart,
+    easeInOutQuint = easeInOutQuint,
+    easeInOutCirc = easeInOutCirc,
+    easeInOutBounce = easeInOutBounce
 }
 
 local expect = require("expect").expect
@@ -240,8 +238,8 @@ end
 function CustomAnimation.setEase(self, ease)
     expect(1, self, "table")
     expect(2, ease, "string")
-    if(lerp[ease]==nil)then
-        error("Ease "..ease.." does not exist")
+    if (lerp[ease] == nil) then
+        error("Ease " .. ease .. " does not exist")
     end
     self.ease = ease
     return self
@@ -278,15 +276,18 @@ function CustomAnimation.run(self, func)
     expect(1, self, "table")
     expect(2, func, "function")
     local inserted = false
-    for k,v in pairs(self._animations)do
-        if(v.time==self.duration)then
+    for k, v in pairs(self._animations) do
+        if (v.time == self.duration) then
             table.insert(v.anims, func)
             inserted = true
             break
         end
     end
-    if(not inserted)then
-        table.insert(self._animations, {time=self.duration, anims={func}})
+    if (not inserted) then
+        table.insert(self._animations, {
+            time = self.duration,
+            anims = {func}
+        })
     end
     return self
 end
@@ -307,11 +308,11 @@ end
 function CustomAnimation.update(self, timerId)
     expect(1, self, "table")
     expect(2, timerId, "number")
-    if(timerId==self.timerId)then
+    if (timerId == self.timerId) then
         self.curTime = self.curTime + self.timeIncrement
-        if(self.curTime>=self.duration)then
-            if(#self.onDoneHandler>0)then
-                for _,v in pairs(self.onDoneHandler)do
+        if (self.curTime >= self.duration) then
+            if (#self.onDoneHandler > 0) then
+                for _, v in pairs(self.onDoneHandler) do
                     v()
                 end
             end
@@ -319,9 +320,9 @@ function CustomAnimation.update(self, timerId)
             os.cancelTimer(self.timerId)
             return
         end
-        for k,v in pairs(self._animationCache)do
-            if(v.time<=self.curTime)then
-                for _,anim in pairs(v.anims)do
+        for k, v in pairs(self._animationCache) do
+            if (v.time <= self.curTime) then
+                for _, anim in pairs(v.anims) do
                     anim(self)
                 end
                 table.remove(self._animationCache, k)
@@ -337,9 +338,12 @@ function CustomAnimation.play(self)
     expect(1, self, "table")
     self.curTime = 0
     self.timerId = os.startTimer(self.timeIncrement)
-    for k,v in pairs(self._animations)do
-        self._animationCache[k] = {time=v.time, anims={}}
-        for _,anim in pairs(v.anims)do
+    for k, v in pairs(self._animations) do
+        self._animationCache[k] = {
+            time = v.time,
+            anims = {}
+        }
+        for _, anim in pairs(v.anims) do
             table.insert(self._animationCache[k].anims, anim)
         end
     end
@@ -361,29 +365,28 @@ function CustomAnimation.onDone(self, func)
     return self
 end
 
-
 --- @class VisualElement
 local Animation = {}
 
 local function animationMoveHelper(element, v3, v4, duration, offset, ease, get, set)
     local animation = CustomAnimation:new()
     animation:setEase(ease or "linear")
-    if(offset~=nil)then
+    if (offset ~= nil) then
         animation:wait(offset)
     end
     local v1, v2 = get(element)
-    for i=0.05, duration, 0.05 do
+    for i = 0.05, duration, 0.05 do
         animation:run(function(self)
-            local pct = lerp[self.ease](i/duration)
-            local newV1 = math.floor(lerp.lerp(v1, v3, pct)+0.5)
-            local newV2 = math.floor(lerp.lerp(v2, v4, pct)+0.5)
+            local pct = lerp[self.ease](i / duration)
+            local newV1 = math.floor(lerp.lerp(v1, v3, pct) + 0.5)
+            local newV2 = math.floor(lerp.lerp(v2, v4, pct) + 0.5)
             set(element, newV1, newV2)
         end):wait(0.05)
     end
     animation:onDone(function()
         set(element, v3, v4)
-        for k,v in pairs(element.animations)do
-            if(v==posAnimation)then
+        for k, v in pairs(element.animations) do
+            if (v == posAnimation) then
                 table.remove(element.animations, k)
                 break
             end
@@ -391,7 +394,7 @@ local function animationMoveHelper(element, v3, v4, duration, offset, ease, get,
     end):play()
     table.insert(element.animations, animation)
     return animation
-end 
+end
 
 --- Moves the element to the specified position from its current position.
 ---@param self VisualElement The element to animate.
@@ -438,8 +441,8 @@ function Animation:animateOffset(x, y, duration, offset, ease)
     expect(4, duration, "number", "nil")
     expect(5, offset, "number", "nil")
     expect(6, ease, "string", "nil")
-    if(self.getOffset==nil or self.setOffset==nil)then
-        error("Element "..self:getType().." does not have offset!")
+    if (self.getOffset == nil or self.setOffset == nil) then
+        error("Element " .. self:getType() .. " does not have offset!")
     end
     return animationMoveHelper(self, x, y, duration, offset, ease, self.getOffset, self.setOffset)
 end
@@ -460,20 +463,20 @@ end
 ---@protected
 function Animation.init(original)
     local baseEvent = original.event
-    
+
     original.event = function(self, event, timerId, ...)
-        if(event=="timer")then
-            for _,v in pairs(self.animations)do
+        if (event == "timer") then
+            for _, v in pairs(self.animations) do
                 v:update(timerId)
             end
         end
 
-        if(baseEvent)then
+        if (baseEvent) then
             return baseEvent(self, event, timerId, ...)
         end
     end
 end
 
 return {
-    VisualElement = Animation,
+    VisualElement = Animation
 }

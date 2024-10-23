@@ -1,7 +1,7 @@
 local args = table.pack(...)
 local dir = fs.getDir(args[2] or ".basalt")
-if(dir==nil)then
-    error("Unable to find directory "..args[2].." please report this bug to our discord.")
+if (dir == nil) then
+    error("Unable to find directory " .. args[2] .. " please report this bug to our discord.")
 end
 
 --- @class BasaltLoader
@@ -14,10 +14,10 @@ local extensionNames = {}
 local basalt
 local config
 
-if not(bundled)then
-    if(fs.exists(fs.combine(dir, "elements")))then
-        for _,v in pairs(fs.list(fs.combine(dir, "elements")))do
-            if(fs.isDir(fs.combine(fs.combine(dir, "elements"), v)))then
+if not (bundled) then
+    if (fs.exists(fs.combine(dir, "elements"))) then
+        for _, v in pairs(fs.list(fs.combine(dir, "elements"))) do
+            if (fs.isDir(fs.combine(fs.combine(dir, "elements"), v))) then
                 availableElements[v] = true
             else
                 local obj = v:gsub(".lua", "")
@@ -27,49 +27,52 @@ if not(bundled)then
     end
 
     local allExt = {}
-    if(fs.exists(fs.combine(dir, "extensions")))then
-        for _,v in pairs(fs.list(fs.combine(dir, "extensions")))do
+    if (fs.exists(fs.combine(dir, "extensions"))) then
+        for _, v in pairs(fs.list(fs.combine(dir, "extensions"))) do
             table.insert(allExt, v)
         end
     end
 
-    for _,v in pairs(allExt)do
+    for _, v in pairs(allExt) do
         local newExtension
-        if(fs.isDir(fs.combine(fs.combine(dir, "extensions"), v)))then
+        if (fs.isDir(fs.combine(fs.combine(dir, "extensions"), v))) then
             table.insert(extensionNames, fs.combine(fs.combine(dir, "extensions"), v))
-            newExtension = require(v.."/init")
+            newExtension = require(v .. "/init")
         else
             table.insert(extensionNames, v)
             newExtension = require(v:gsub(".lua", ""))
         end
-        if(type(newExtension)=="table")then
-            for a,b in pairs(newExtension)do
-                if(type(a)=="string")then
-                    if(_EXTENSIONS[a]==nil)then _EXTENSIONS[a] = {} end
+        if (type(newExtension) == "table") then
+            for a, b in pairs(newExtension) do
+                if (type(a) == "string") then
+                    if (_EXTENSIONS[a] == nil) then
+                        _EXTENSIONS[a] = {}
+                    end
                     table.insert(_EXTENSIONS[a], b)
                 end
             end
         end
     end
 else
-    for _,v in pairs(bundled_availableFiles["basalt/elements"])do
+    for _, v in pairs(bundled_availableFiles["basalt/elements"]) do
         availableElements[v:gsub(".lua", "")] = true
     end
 
-    for _,v in pairs(bundled_availableFiles["basalt/extensions"])do
+    for _, v in pairs(bundled_availableFiles["basalt/extensions"]) do
         table.insert(extensionNames, v)
         local newExtension = require(v:gsub(".lua", ""))
-        if(type(newExtension)=="table")then
-            for a,b in pairs(newExtension)do
-                if(type(a)=="string")then
-                    if(_EXTENSIONS[a]==nil)then _EXTENSIONS[a] = {} end
+        if (type(newExtension) == "table") then
+            for a, b in pairs(newExtension) do
+                if (type(a) == "string") then
+                    if (_EXTENSIONS[a] == nil) then
+                        _EXTENSIONS[a] = {}
+                    end
                     table.insert(_EXTENSIONS[a], b)
                 end
             end
         end
     end
 end
-
 
 function basaltLoader.load(elementName)
     if _ELEMENTS[elementName] then
@@ -78,27 +81,27 @@ function basaltLoader.load(elementName)
     local defaultPath = package.path
     local format = "path;/path/?.lua;/path/?/init.lua;"
     local main = format:gsub("path", dir)
-    local objFolder = format:gsub("path", dir.."/elements")
-    local extFolder = format:gsub("path", dir.."/extensions")
-    local libFolder = format:gsub("path", dir.."/libraries")
+    local objFolder = format:gsub("path", dir .. "/elements")
+    local extFolder = format:gsub("path", dir .. "/extensions")
+    local libFolder = format:gsub("path", dir .. "/libraries")
 
-    package.path = main..objFolder..extFolder..libFolder..defaultPath
+    package.path = main .. objFolder .. extFolder .. libFolder .. defaultPath
 
     _ELEMENTS[elementName] = require(fs.combine("elements", elementName))
 
     if _EXTENSIONS[elementName] then
         for _, extension in ipairs(_EXTENSIONS[elementName]) do
-            if(extension.extensionProperties~=nil)then
+            if (extension.extensionProperties ~= nil) then
                 extension.extensionProperties(_ELEMENTS[elementName])
             end
             extension.extensionProperties = nil
-            if(extension.init~=nil)then
+            if (extension.init ~= nil) then
                 extension.init(_ELEMENTS[elementName], basalt)
             end
             extension.init = nil
-    
-            for a,b in pairs(extension)do
-                if(type(a)=="string")then
+
+            for a, b in pairs(extension) do
+                if (type(a) == "string") then
                     _ELEMENTS[elementName][a] = b
                 end
             end
@@ -114,8 +117,8 @@ function basaltLoader.getElementList()
 end
 
 function basaltLoader.extensionExists(name)
-    for k,v in pairs(extensionNames)do
-        if(string.lower( v:gsub(".lua", ""))==string.lower(name))then
+    for k, v in pairs(extensionNames) do
+        if (string.lower(v:gsub(".lua", "")) == string.lower(name)) then
             return true
         end
     end
@@ -123,10 +126,10 @@ function basaltLoader.extensionExists(name)
 end
 
 function basaltLoader.getExtension(extensionName)
-    if(_EXTENSIONS[extensionName]~=nil)then
+    if (_EXTENSIONS[extensionName] ~= nil) then
         return _EXTENSIONS[extensionName]
     end
-    return extensionName==nil and _EXTENSIONS or nil
+    return extensionName == nil and _EXTENSIONS or nil
 end
 
 function basaltLoader.setBasalt(basaltInstance)
@@ -134,15 +137,17 @@ function basaltLoader.setBasalt(basaltInstance)
 end
 
 function basaltLoader.getConfig()
-    if(config==nil)then
+    if (config == nil) then
         local github = "https://raw.githubusercontent.com/Pyroxenium/basalt-docs/main/config.json"
-        if(github~=nil)then
+        if (github ~= nil) then
             local response = http.get(github)
-            if(response==nil)then
+            if (response == nil) then
                 error("Couldn't get the config file from github!")
             end
-            if(config~=nil)then
-                pcall(function() response.close() end)
+            if (config ~= nil) then
+                pcall(function()
+                    response.close()
+                end)
                 return config
             end
             config = textutils.unserializeJSON(response.readAll())
@@ -157,12 +162,12 @@ end
 
 local function downloadElement(name)
     local config = basaltLoader.getConfig()
-    for k,v in pairs(config.versions.elements)do
-        if(string.lower(k)==string.lower(name))then
+    for k, v in pairs(config.versions.elements) do
+        if (string.lower(k) == string.lower(name)) then
             local url = v[2]
             local response = http.get(url)
-            if(response==nil)then
-                error("Couldn't get the element "..name.." from github!")
+            if (response == nil) then
+                error("Couldn't get the element " .. name .. " from github!")
             end
             local data = response.readAll()
             return data
@@ -172,33 +177,33 @@ end
 
 local function requireElement(name)
     name = name:gsub("^%l", string.upper)
-    if(availableElements[name]==nil)then
-        print("Loading element "..name.." from github...")
+    if (availableElements[name] == nil) then
+        print("Loading element " .. name .. " from github...")
         local data = downloadElement(name)
-        if(data==nil)then
-            error("Couldn't find the element "..name.." in the github config!")
+        if (data == nil) then
+            error("Couldn't find the element " .. name .. " in the github config!")
         end
-        if(settings.get("basalt.storeDownloadedFiles"))then
-            local file = fs.open(fs.combine(dir, "elements/"..name..".lua"), "w")
+        if (settings.get("basalt.storeDownloadedFiles")) then
+            local file = fs.open(fs.combine(dir, "elements/" .. name .. ".lua"), "w")
             file.write(data)
             file.close()
         end
         local element = load(data, nil, "t", _ENV)()
         _ELEMENTS[name] = element
 
-        if(_EXTENSIONS[name]~=nil)then
+        if (_EXTENSIONS[name] ~= nil) then
             for _, extension in ipairs(_EXTENSIONS[name]) do
-                if(extension.extensionProperties~=nil)then
+                if (extension.extensionProperties ~= nil) then
                     extension.extensionProperties(_ELEMENTS[name])
                 end
                 extension.extensionProperties = nil
-                if(extension.init~=nil)then
+                if (extension.init ~= nil) then
                     extension.init(_ELEMENTS[name], basalt)
                 end
                 extension.init = nil
-        
-                for a,b in pairs(extension)do
-                    if(type(a)=="string")then
+
+                for a, b in pairs(extension) do
+                    if (type(a) == "string") then
                         _ELEMENTS[name][a] = b
                     end
                 end
@@ -211,12 +216,12 @@ end
 
 local function downloadExtension(name)
     local config = basaltLoader.getConfig()
-    for k,v in pairs(config.versions.extensions)do
-        if(string.lower(k)==string.lower(name))then
+    for k, v in pairs(config.versions.extensions) do
+        if (string.lower(k) == string.lower(name)) then
             local url = v[2]
             local response = http.get(url)
-            if(response==nil)then
-                error("Couldn't get the extension "..name.." from github!")
+            if (response == nil) then
+                error("Couldn't get the extension " .. name .. " from github!")
             end
             local data = response.readAll()
             return data
@@ -225,28 +230,30 @@ local function downloadExtension(name)
 end
 
 local function requireExtension(name)
-    if not(basaltLoader.extensionExists(name))then
-        print("Loading extension "..name.." from github...")
+    if not (basaltLoader.extensionExists(name)) then
+        print("Loading extension " .. name .. " from github...")
         local data = downloadExtension(name)
-        if(data==nil)then
-            error("Couldn't find the extension "..name.." in the github config!")
+        if (data == nil) then
+            error("Couldn't find the extension " .. name .. " in the github config!")
         end
-        if(settings.get("basalt.storeDownloadedFiles"))then
-            local file = fs.open(fs.combine(dir, "extensions/"..name..".lua"), "w")
+        if (settings.get("basalt.storeDownloadedFiles")) then
+            local file = fs.open(fs.combine(dir, "extensions/" .. name .. ".lua"), "w")
             file.write(data)
             file.close()
         end
         local func = load(data, nil, "t", _ENV)
         local extension = func()
-        if(type(extension)=="table")then
-            for elementName,fList in pairs(extension)do
-                if(_EXTENSIONS[elementName]==nil)then _EXTENSIONS[elementName] = {} end
+        if (type(extension) == "table") then
+            for elementName, fList in pairs(extension) do
+                if (_EXTENSIONS[elementName] == nil) then
+                    _EXTENSIONS[elementName] = {}
+                end
                 table.insert(_EXTENSIONS[elementName], fList)
-                if(elementName=="Basalt")then
+                if (elementName == "Basalt") then
                     fList.basalt = basalt
-                    for fName,f in pairs(fList)do
-                        if(type(fName)=="string")then
-                            if(fName=="init")then
+                    for fName, f in pairs(fList) do
+                        if (type(fName) == "string") then
+                            if (fName == "init") then
                                 f(basalt)
                             else
                                 basalt[fName] = f
@@ -254,17 +261,17 @@ local function requireExtension(name)
                         end
                     end
                 else
-                    if(_ELEMENTS[elementName]~=nil)then
-                        if(fList.extensionProperties~=nil)then
+                    if (_ELEMENTS[elementName] ~= nil) then
+                        if (fList.extensionProperties ~= nil) then
                             fList.extensionProperties(_ELEMENTS[elementName])
                         end
                         fList.extensionProperties = nil
-                        if(fList.init~=nil)then
+                        if (fList.init ~= nil) then
                             fList.init(_ELEMENTS[elementName], basalt)
                         end
                         fList.init = nil
-                        for fName,f in pairs(fList)do
-                            if(type(fName)=="string")then
+                        for fName, f in pairs(fList) do
+                            if (type(fName) == "string") then
                                 _ELEMENTS[elementName][fName] = f
                             end
                         end
@@ -277,9 +284,9 @@ local function requireExtension(name)
 end
 
 function basaltLoader.require(typ, name)
-    if(typ=="element")then
+    if (typ == "element") then
         return requireElement(name)
-    elseif(typ=="extension")then
+    elseif (typ == "extension") then
         return requireExtension(name)
     end
 end

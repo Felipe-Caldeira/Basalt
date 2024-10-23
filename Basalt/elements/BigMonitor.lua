@@ -1,18 +1,18 @@
-local type,len,rep,sub = type,string.len,string.rep,string.sub
+local type, len, rep, sub = type, string.len, string.rep, string.sub
 local tHex = require("utils").tHex
 local expect = require("expect").expect
 
 local function MassiveMonitor(monitors)
-    local globalX, globalY,monX,monY,w,h = 1,1,1,1,0,0
-    local blink,scale = false,1
-    local fg,bg = colors.white,colors.black
+    local globalX, globalY, monX, monY, w, h = 1, 1, 1, 1, 0, 0
+    local blink, scale = false, 1
+    local fg, bg = colors.white, colors.black
 
-    for k,v in pairs(monitors)do
-        for a,b in pairs(v)do
-            if(type(b)=="string")then
+    for k, v in pairs(monitors) do
+        for a, b in pairs(v) do
+            if (type(b) == "string") then
                 local mon = peripheral.wrap(b)
-                if(mon==nil)then
-                    error("Unable to find monitor "..b)
+                if (mon == nil) then
+                    error("Unable to find monitor " .. b)
                 end
                 monitors[k][a] = mon
                 monitors[k][a].name = b
@@ -44,8 +44,8 @@ local function MassiveMonitor(monitors)
     local function call(f, ...)
         local t = {...}
         return function()
-            for k,v in pairs(monitors)do
-                for a,b in pairs(v)do
+            for k, v in pairs(monitors) do
+                for a, b in pairs(v) do
                     b[f](table.unpack(t))
                 end
             end
@@ -54,10 +54,16 @@ local function MassiveMonitor(monitors)
 
     local function cursorBlink()
         call("setCursorBlink", false)()
-        if not(blink)then return end
-        if(monitors[monY]==nil)then return end
+        if not (blink) then
+            return
+        end
+        if (monitors[monY] == nil) then
+            return
+        end
         local mon = monitors[monY][monX]
-        if(mon==nil)then return end
+        if (mon == nil) then
+            return
+        end
         mon.setCursorBlink(blink)
     end
 
@@ -100,7 +106,8 @@ local function MassiveMonitor(monitors)
             local lengthToWrite = math.min(monW - localX + 1, len(remainingText))
 
             currentMonitor.setCursorPos(localX, globalY)
-            currentMonitor.blit(sub(remainingText, 1, lengthToWrite), sub(remainingTCol, 1, lengthToWrite), sub(remainingBCol, 1, lengthToWrite))
+            currentMonitor.blit(sub(remainingText, 1, lengthToWrite), sub(remainingTCol, 1, lengthToWrite),
+                sub(remainingBCol, 1, lengthToWrite))
 
             remainingText = sub(remainingText, lengthToWrite + 1)
             remainingTCol = sub(remainingTCol, lengthToWrite + 1)
@@ -111,7 +118,7 @@ local function MassiveMonitor(monitors)
         end
     end
 
-   return {
+    return {
         clear = call("clear"),
 
         setCursorBlink = function(_blink)
@@ -127,7 +134,7 @@ local function MassiveMonitor(monitors)
             return globalX, globalY
         end,
 
-        setCursorPos = function(newX,newY)
+        setCursorPos = function(newX, newY)
             globalX, globalY = newX, newY
             cursorBlink()
         end,
@@ -141,8 +148,8 @@ local function MassiveMonitor(monitors)
             return scale
         end,
 
-        blit = function(text,fgCol,bgCol)
-            blit(globalX, globalY, text,fgCol,bgCol)
+        blit = function(text, fgCol, bgCol)
+            blit(globalX, globalY, text, fgCol, bgCol)
         end,
 
         write = function(text)
@@ -165,23 +172,25 @@ local function MassiveMonitor(monitors)
 
         calculateClick = function(name, xClick, yClick)
             local relY = 0
-            for k,v in pairs(monitors)do
+            for k, v in pairs(monitors) do
                 local relX = 0
                 local maxY = 0
-                for a,b in pairs(v)do
-                    local wM,hM = b.getSize()
-                    if(b.name==name)then
+                for a, b in pairs(v) do
+                    local wM, hM = b.getSize()
+                    if (b.name == name) then
                         return xClick + relX, yClick + relY
                     end
                     relX = relX + wM
-                    if(hM > maxY)then maxY = hM end
+                    if (hM > maxY) then
+                        maxY = hM
+                    end
                 end
                 relY = relY + maxY
             end
             return xClick, yClick
-        end,
+        end
 
-   }
+    }
 end
 
 local loader = require("basaltLoader")
@@ -200,21 +209,21 @@ BigMonitor:initialize("BigMonitor")
 --- @return BigMonitor
 ---@protected
 function BigMonitor:new(id, parent, basalt)
-  local newInstance = Container:new(id, parent, basalt)
-  setmetatable(newInstance, self)
-  self.__index = self
-  newInstance:setType("BigMonitor")
-  newInstance:create("BigMonitor")
-  return newInstance
+    local newInstance = Container:new(id, parent, basalt)
+    setmetatable(newInstance, self)
+    self.__index = self
+    newInstance:setType("BigMonitor")
+    newInstance:create("BigMonitor")
+    return newInstance
 end
 
 ---@protected
 function BigMonitor:event(event, ...)
-  Container.event(self, event, ...)
-  if(event=="monitor_resize")then
-    self:forceVisibleChildrenUpdate()
-    self:setSize(self.massiveMon.getSize())
-  end
+    Container.event(self, event, ...)
+    if (event == "monitor_resize") then
+        self:forceVisibleChildrenUpdate()
+        self:setSize(self.massiveMon.getSize())
+    end
 end
 
 --- Sets the group of monitors to be used.
@@ -224,21 +233,21 @@ end
 function BigMonitor:setGroup(group)
     expect(1, self, "table")
     expect(2, group, "table")
-    if(type(group)~="table")then
-        error("Expected table, got "..type(group))
+    if (type(group) ~= "table") then
+        error("Expected table, got " .. type(group))
     end
     local monitors = {}
-    for k,v in pairs(group)do
+    for k, v in pairs(group) do
         monitors[k] = {}
-        for a,b in pairs(v)do
-            if(type(b=="string"))then
+        for a, b in pairs(v) do
+            if (type(b == "string")) then
                 local mon = peripheral.wrap(b)
-            if(mon==nil)then
-                error("Unable to find monitor "..b)
-            end
+                if (mon == nil) then
+                    error("Unable to find monitor " .. b)
+                end
                 monitors[k][a] = mon
                 monitors[k][a].name = b
-            elseif(type(b)=="table")then
+            elseif (type(b) == "table") then
                 monitors[k][a] = b
                 monitors[k][a].name = peripheral.getName(b)
             end

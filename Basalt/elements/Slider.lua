@@ -27,13 +27,13 @@ Slider:addListener("change", "value_change")
 --- @return Slider
 ---@protected
 function Slider:new(id, parent, basalt)
-  local newInstance = VisualElement:new(id, parent, basalt)
-  setmetatable(newInstance, self)
-  self.__index = self
-  newInstance:setType("Slider")
-  newInstance:create("Slider")
-  newInstance:setSize(20, 1)
-  return newInstance
+    local newInstance = VisualElement:new(id, parent, basalt)
+    setmetatable(newInstance, self)
+    self.__index = self
+    newInstance:setType("Slider")
+    newInstance:create("Slider")
+    newInstance:setSize(20, 1)
+    return newInstance
 end
 
 Slider:extend("Load", function(self)
@@ -61,8 +61,8 @@ end
 
 ---@protected
 function Slider:mouse_click(button, x, y)
-    if(VisualElement.mouse_click(self, button, x, y))then
-        if(button == 1)then
+    if (VisualElement.mouse_click(self, button, x, y)) then
+        if (button == 1) then
             calculateKnobPosition(self, x, y)
         end
         return true
@@ -71,8 +71,8 @@ end
 
 ---@protected
 function Slider:mouse_drag(button, x, y)
-    if(VisualElement.mouse_drag(self, button, x, y))then
-        if(button == 1)then
+    if (VisualElement.mouse_drag(self, button, x, y)) then
+        if (button == 1) then
             calculateKnobPosition(self, x, y)
         end
         return true
@@ -103,8 +103,6 @@ function Slider:mouse_scroll(direction, x, y)
         return true
     end
 end
-
-
 
 ---@protected
 function Slider:render()

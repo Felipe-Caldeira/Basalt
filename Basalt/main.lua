@@ -4,12 +4,12 @@ local basaltPath = args[1] or ".basalt"
 local defaultPath = package.path
 local format = "path;/path/?.lua;/path/?/init.lua;"
 local main = format:gsub("path", basaltPath)
-local eleFolder = format:gsub("path", basaltPath.."/elements")
-local extFolder = format:gsub("path", basaltPath.."/extensions")
-local libFolder = format:gsub("path", basaltPath.."/libraries")
+local eleFolder = format:gsub("path", basaltPath .. "/elements")
+local extFolder = format:gsub("path", basaltPath .. "/extensions")
+local libFolder = format:gsub("path", basaltPath .. "/libraries")
 local expectLib = require("expect")
 local expect = expectLib.expect
-package.path = main..eleFolder..extFolder..libFolder..defaultPath
+package.path = main .. eleFolder .. extFolder .. libFolder .. defaultPath
 
 local loader = require("basaltLoader")
 local utils = require("utils")
@@ -17,46 +17,70 @@ local log = require("log")
 
 --- The Basalt Core API
 --- @class Basalt
-local basalt = {traceback=true, log=log, extensionExists = loader.extensionExists}
+local basalt = {
+    traceback = true,
+    log = log,
+    extensionExists = loader.extensionExists
+}
 
 local threads = {}
 local updaterActive = false
 local mainFrame, focusedFrame, frames, monFrames = nil, nil, {}, {}
 local baseTerm = term.current()
 local registeredEvents = {}
-local keysDown,mouseDown = {}, {}
+local keysDown, mouseDown = {}, {}
 loader.setBasalt(basalt)
 expectLib.basalt = basalt
 
 ---- Frame Rendering
 local function drawFrames()
-    if(updaterActive==false)then return end
-    if(mainFrame~=nil)then
+    if (updaterActive == false) then
+        return
+    end
+    if (mainFrame ~= nil) then
         mainFrame:processRender()
     end
-    for _,v in pairs(monFrames)do
+    for _, v in pairs(monFrames) do
         v:processRender()
     end
 end
 
 ---- Event Handling
-local throttle = {mouse_drag=0.05, mouse_move=0.05}
+local throttle = {
+    mouse_drag = 0.05,
+    mouse_move = 0.05
+}
 local lastEventTimes = {}
 local lastEventArgs = {}
 
 local events = {
-    mouse = {mouse_click=true,mouse_up=true,mouse_drag=true,mouse_scroll=true,mouse_move=true,monitor_touch=true},
-    keyboard = {key=true,key_up=true,char=true}
+    mouse = {
+        mouse_click = true,
+        mouse_up = true,
+        mouse_drag = true,
+        mouse_scroll = true,
+        mouse_move = true,
+        monitor_touch = true
+    },
+    keyboard = {
+        key = true,
+        key_up = true,
+        char = true
+    }
 }
 local function updateEvent(event, ...)
     local p = {...}
-    if(event=="terminate")then basalt.stop() end
-    if(event=="mouse_move")then
-        if(p[1]==nil)or(p[2]==nil)then return end
+    if (event == "terminate") then
+        basalt.stop()
+    end
+    if (event == "mouse_move") then
+        if (p[1] == nil) or (p[2] == nil) then
+            return
+        end
     end
 
-    for _,v in pairs(registeredEvents)do
-        if(v==event)then
+    for _, v in pairs(registeredEvents) do
+        if (v == event) then
             if not v(event, unpack(p)) then
                 return
             end
@@ -64,12 +88,12 @@ local function updateEvent(event, ...)
     end
 
     if event == "timer" then
-        for k,v in pairs(lastEventTimes) do
+        for k, v in pairs(lastEventTimes) do
             if v == p[1] then
                 if mainFrame ~= nil and mainFrame[k] ~= nil then
                     mainFrame[k](mainFrame, unpack(lastEventArgs[k]))
                 end
-                for _,b in pairs(monFrames) do
+                for _, b in pairs(monFrames) do
                     if b[k] ~= nil then
                         b[k](b, unpack(lastEventArgs[k]))
                     end
@@ -89,24 +113,24 @@ local function updateEvent(event, ...)
         lastEventArgs[event] = p
         return
     else
-        if(event=="key")then
+        if (event == "key") then
             keysDown[p[1]] = true
         end
-        if(event=="key_up")then
+        if (event == "key_up") then
             keysDown[p[1]] = false
         end
-        if(event=="mouse_click")then
+        if (event == "mouse_click") then
             mouseDown[p[1]] = true
         end
-        if(event=="mouse_up")then
+        if (event == "mouse_up") then
             mouseDown[p[1]] = false
             if mainFrame ~= nil and mainFrame.mouse_release ~= nil then
                 mainFrame.mouse_release(mainFrame, unpack(p))
             end
         end
-        if(events.mouse[event])then
-            if(event=="monitor_touch")then
-                for _,v in pairs(monFrames) do
+        if (events.mouse[event]) then
+            if (event == "monitor_touch") then
+                for _, v in pairs(monFrames) do
                     if v[event] ~= nil then
                         v[event](v, unpack(p))
                     end
@@ -116,36 +140,36 @@ local function updateEvent(event, ...)
                     mainFrame[event](mainFrame, unpack(p))
                 end
             end
-        elseif(events.keyboard[event])then
+        elseif (events.keyboard[event]) then
             if focusedFrame ~= nil and focusedFrame[event] ~= nil then
                 focusedFrame[event](focusedFrame, unpack(p))
             end
         else
-            for _,v in pairs(frames)do
-                if(v.event~=nil)then
+            for _, v in pairs(frames) do
+                if (v.event ~= nil) then
                     v.event(v, event, unpack(p))
                 end
             end
-            for _,v in pairs(monFrames) do
+            for _, v in pairs(monFrames) do
                 if v[event] ~= nil then
                     v[event](v, event, unpack(p))
                 end
             end
         end
-        if(#threads>0)then
-            for k,v in pairs(threads)do
-                if(coroutine.status(v.thread)=="dead")then
+        if (#threads > 0) then
+            for k, v in pairs(threads) do
+                if (coroutine.status(v.thread) == "dead") then
                     table.remove(threads, k)
                 else
-                    if(v.filter~=nil)then
-                        if(event~=v.filter)then
+                    if (v.filter ~= nil) then
+                        if (event ~= v.filter) then
                             drawFrames()
                             return
                         end
-                        v.filter=nil
+                        v.filter = nil
                     end
                     local ok, filter = coroutine.resume(v.thread, event, ...)
-                    if(ok)then
+                    if (ok) then
                         v.filter = filter
                     else
                         basalt.errorHandler(filter)
@@ -158,16 +182,16 @@ local function updateEvent(event, ...)
 end
 
 local function getFrame(id)
-    for _,v in pairs(frames)do
-        if(v:getId()==id)then
+    for _, v in pairs(frames) do
+        if (v:getId() == id) then
             return v
         end
-    end    
+    end
 end
 
 local function getMonitor(id)
-    for _,v in pairs(monFrames)do
-        if(v:getId()==id)then
+    for _, v in pairs(monFrames) do
+        if (v:getId() == id) then
             return v
         end
     end
@@ -180,8 +204,8 @@ function basalt.requiredElement(...)
     expect(1, elements[1], "string")
     local parallelAcccess = {}
     local slTimer = 0
-    for _,v in pairs(elements)do
-        table.insert(parallelAcccess, function ()
+    for _, v in pairs(elements) do
+        table.insert(parallelAcccess, function()
             local delay = slTimer
             sleep(delay)
             loader.require("element", v)
@@ -198,8 +222,8 @@ function basalt.requiredExtension(...)
     expect(1, extensions[1], "string")
     local parallelAcccess = {}
     local slTimer = 0
-    for _,v in pairs(extensions)do
-        table.insert(parallelAcccess, function ()
+    for _, v in pairs(extensions) do
+        table.insert(parallelAcccess, function()
             local delay = slTimer
             sleep(delay)
             loader.require("extension", v)
@@ -234,7 +258,7 @@ end
 --- Returns the current main active main frame, if it doesn't exist it will create one
 --- @return BaseFrame
 function basalt.getMainFrame()
-    if(mainFrame==nil)then
+    if (mainFrame == nil) then
         mainFrame = basalt.addFrame("mainFrame")
     end
     return mainFrame
@@ -245,11 +269,13 @@ end
 --- @return BaseFrame
 function basalt.addFrame(id)
     expect(1, id, "string", "nil")
-    if(mainFrame==nil)then id = id or "mainFrame" end
+    if (mainFrame == nil) then
+        id = id or "mainFrame"
+    end
     id = id or utils.uuid()
     local frame = loader.load("BaseFrame"):new(id, nil, basalt)
     frame:init()
-    if(mainFrame==nil)then
+    if (mainFrame == nil) then
         mainFrame = frame
     end
     table.insert(frames, frame)
@@ -261,15 +287,15 @@ end
 --- @return boolean
 function basalt.removeFrame(frame)
     expect(1, frame, "string", "BaseFrame")
-    if(type(frame)=="string")then
+    if (type(frame) == "string") then
         frame = getFrame(id)
     end
-    if(mainFrame==frame)then
+    if (mainFrame == frame) then
         mainFrame = nil
         term.clear()
     end
-    for k,v in pairs(frames)do
-        if(v==frame)then
+    for k, v in pairs(frames) do
+        if (v == frame) then
             table.remove(frames, k)
             return true
         end
@@ -281,7 +307,7 @@ end
 --- @param frame BaseFrame -- The frame to switch to
 function basalt.switchFrame(frame)
     expect(1, frame, "string", "BaseFrame")
-    if(type(frame)=="string")then
+    if (type(frame) == "string") then
         frame = getFrame(frame)
     end
     mainFrame = frame
@@ -305,11 +331,11 @@ end
 --- @param frame string|Monitor|BigMonitor -- The monitor to remove
 function basalt.removeMonitor(frame)
     expect(1, frame, "string", "Monitor", "BigMonitor")
-    if(type(frame)=="string")then
+    if (type(frame) == "string") then
         frame = getMonitor(frame)
     end
-    for k,v in pairs(monFrames)do
-        if(v==frame)then
+    for k, v in pairs(monFrames) do
+        if (v == frame) then
             table.remove(monFrames, k)
             return
         end
@@ -340,14 +366,14 @@ function basalt.create(id, parent, typ, defaultProperties)
     expect(3, typ, "string")
     expect(4, defaultProperties, "table", "nil")
     local l = loader.load(typ)
-    if(type(l)=="string")then
+    if (type(l) == "string") then
         l = load(l, nil, "t", _ENV)()
     end
     local element = l:new(id, parent, basalt)
-    if(defaultProperties~=nil)then
-        for k,v in pairs(defaultProperties)do
-            local fName = "set"..k:sub(1,1):upper()..k:sub(2)
-            if(element[fName]~=nil)then
+    if (defaultProperties ~= nil) then
+        for k, v in pairs(defaultProperties) do
+            local fName = "set" .. k:sub(1, 1):upper() .. k:sub(2)
+            if (element[fName] ~= nil) then
                 element[fName](element, v)
             else
                 element[k] = v
@@ -377,27 +403,27 @@ function basalt.errorHandler(errMsg)
 
     local fileName, lineNumber, errorMessage = string.match(errMsg, "(.-):(%d+):%s(.*)")
 
-        if(basalt.traceback)then
-            local stackTrace = string.match(errMsg, "stack traceback:(.*)")
-            if stackTrace then
-                coloredPrint("Stack traceback:", colors.gray)
-                for line in stackTrace:gmatch("[^\n]+") do
-                    local fileNameInTraceback, lineNumberInTraceback = line:match("([^:]+):(%d+):")
-                    if fileNameInTraceback and lineNumberInTraceback then
-                        term.setTextColor(colors.lightGray)
-                        term.write(fileNameInTraceback)
-                        term.setTextColor(colors.gray)
-                        term.write(":")
-                        term.setTextColor(colors.lightBlue)
-                        term.write(lineNumberInTraceback)
-                        term.setTextColor(colors.gray)
-                        line = line:gsub(fileNameInTraceback .. ":" .. lineNumberInTraceback, "")
-                    end
-                    coloredPrint(line, colors.gray)
+    if (basalt.traceback) then
+        local stackTrace = string.match(errMsg, "stack traceback:(.*)")
+        if stackTrace then
+            coloredPrint("Stack traceback:", colors.gray)
+            for line in stackTrace:gmatch("[^\n]+") do
+                local fileNameInTraceback, lineNumberInTraceback = line:match("([^:]+):(%d+):")
+                if fileNameInTraceback and lineNumberInTraceback then
+                    term.setTextColor(colors.lightGray)
+                    term.write(fileNameInTraceback)
+                    term.setTextColor(colors.gray)
+                    term.write(":")
+                    term.setTextColor(colors.lightBlue)
+                    term.write(lineNumberInTraceback)
+                    term.setTextColor(colors.gray)
+                    line = line:gsub(fileNameInTraceback .. ":" .. lineNumberInTraceback, "")
                 end
-                print()
+                coloredPrint(line, colors.gray)
             end
+            print()
         end
+    end
 
     if fileName and lineNumber then
         term.setTextColor(colors.red)
@@ -410,7 +436,6 @@ function basalt.errorHandler(errMsg)
         term.write(lineNumber)
         term.setTextColor(colors.red)
         term.write(": ")
-
 
         if errorMessage then
             errorMessage = string.gsub(errorMessage, "stack traceback:.*", "")
@@ -448,7 +473,9 @@ end
 function basalt.run(isActive)
     expect(1, isActive, "boolean", "nil")
     updaterActive = isActive
-    if(isActive==nil)then updaterActive = true end
+    if (isActive == nil) then
+        updaterActive = true
+    end
     local function f()
         drawFrames()
         while updaterActive do
@@ -457,7 +484,7 @@ function basalt.run(isActive)
     end
     while updaterActive do
         local ok, err = xpcall(f, debug.traceback)
-        if not(ok)then
+        if not (ok) then
             basalt.errorHandler(err)
         end
     end
@@ -476,7 +503,7 @@ end
 function basalt.onEvent(event, func)
     expect(1, event, "string")
     expect(2, func, "function")
-    if(registeredEvents[event]==nil)then
+    if (registeredEvents[event] == nil) then
         registeredEvents[event] = {}
     end
     table.insert(registeredEvents[event], func)
@@ -488,9 +515,11 @@ end
 function basalt.removeEvent(event, func)
     expect(event, "string")
     expect(func, "function")
-    if(registeredEvents[event]==nil)then return end
-    for k,v in pairs(registeredEvents[event])do
-        if(v==func)then
+    if (registeredEvents[event] == nil) then
+        return
+    end
+    for k, v in pairs(registeredEvents[event]) do
+        if (v == func) then
             table.remove(registeredEvents[event], k)
         end
     end
@@ -500,15 +529,14 @@ end
 --- @param frame BaseFrame|Monitor|BigMonitor -- The frame to focus
 function basalt.setFocusedFrame(frame)
     expect(1, frame, "BaseFrame", "Monitor", "BigMonitor")
-    if(focusedFrame~=nil)then
+    if (focusedFrame ~= nil) then
         focusedFrame:lose_focus()
     end
-    if(frame~=nil)then
+    if (frame ~= nil) then
         frame:get_focus()
     end
     focusedFrame = frame
 end
-
 
 --- Starts a new thread which runs the function parallel to the main thread
 --- @param func function -- The function to run
@@ -519,10 +547,10 @@ function basalt.thread(func, ...)
     local threadData = {}
     threadData.thread = coroutine.create(func)
     local ok, filter = coroutine.resume(threadData.thread, ...)
-    if(ok)then
+    if (ok) then
         threadData.stop = function()
-            for k,v in pairs(threads)do
-                if(v==threadData)then
+            for k, v in pairs(threads) do
+                if (v == threadData) then
                     table.remove(threads, k)
                 end
             end
@@ -542,7 +570,7 @@ end
 --- Stops the update loop
 function basalt.stop()
     baseTerm.clear()
-    baseTerm.setCursorPos(1,1)
+    baseTerm.setCursorPos(1, 1)
     baseTerm.setBackgroundColor(colors.black)
     baseTerm.setTextColor(colors.red)
     baseTerm.setTextColor(colors.white)
@@ -556,14 +584,14 @@ function basalt.getTerm()
 end
 
 local extensions = loader.getExtension("Basalt")
-if(extensions~=nil)then
-    for _,v in pairs(extensions)do
+if (extensions ~= nil) then
+    for _, v in pairs(extensions) do
         v.basalt = basalt
-        if(v.init~=nil)then
+        if (v.init ~= nil) then
             v.init(basalt)
         end
-        for a,b in pairs(v)do
-            if(a~="init")then
+        for a, b in pairs(v) do
+            if (a ~= "init") then
                 basalt[a] = b
             end
         end

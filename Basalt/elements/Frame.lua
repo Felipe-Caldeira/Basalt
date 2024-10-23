@@ -13,14 +13,14 @@ Frame:initialize("Frame")
 --- @return Frame
 ---@protected
 function Frame:new(id, parent, basalt)
-  local newInstance = Container:new(id, parent, basalt)
-  setmetatable(newInstance, self)
-  self.__index = self
-  newInstance:setType("Frame")
-  newInstance:create("Frame")
-  newInstance:setZ(10)
-  newInstance:setSize(30, 12)
-  return newInstance
+    local newInstance = Container:new(id, parent, basalt)
+    setmetatable(newInstance, self)
+    self.__index = self
+    newInstance:setType("Frame")
+    newInstance:create("Frame")
+    newInstance:setZ(10)
+    newInstance:setSize(30, 12)
+    return newInstance
 end
 
 return Frame

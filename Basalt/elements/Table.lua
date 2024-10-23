@@ -13,14 +13,14 @@ Table:initialize("Table")
 --- @return Table
 ---@protected
 function Table:new(id, parent, basalt)
-  local newInstance = Container:new(id, parent, basalt)
-  setmetatable(newInstance, self)
-  self.__index = self
-  newInstance:setType("Table")
-  newInstance:create("Table")
-  newInstance:setZ(10)
-  newInstance:setSize(30, 12)
-  return newInstance
+    local newInstance = Container:new(id, parent, basalt)
+    setmetatable(newInstance, self)
+    self.__index = self
+    newInstance:setType("Table")
+    newInstance:create("Table")
+    newInstance:setZ(10)
+    newInstance:setSize(30, 12)
+    return newInstance
 end
 
 return Table

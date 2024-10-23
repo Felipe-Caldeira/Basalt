@@ -1,6 +1,8 @@
 local protectedNames = {clamp=true, round=true, math=true, colors=true}
 local function replace(word)
-    if(protectedNames[word])then return word end
+    if (protectedNames[word]) then
+        return word
+    end
     if word:sub(1, 1):find('%a') and not word:find('.', 1, true) then
         return '"' .. word .. '"'
     end
@@ -10,9 +12,9 @@ end
 local function parseString(str)
     str = str:gsub("{", "")
     str = str:gsub("}", "")
-    for k,v in pairs(colors)do
-        if(type(k)=="string")then
-            str = str:gsub("%f[%w]"..k.."%f[%W]", "colors."..k)
+    for k, v in pairs(colors) do
+        if (type(k) == "string") then
+            str = str:gsub("%f[%w]" .. k .. "%f[%W]", "colors." .. k)
         end
     end
     str = str:gsub("(%s?)([%w.]+)", function(a, b) return a .. replace(b) end)
@@ -22,8 +24,6 @@ local function parseString(str)
     str = str:gsub("%.h%f[%W]", ".height")
     return str
 end
-
-
 
 local function processString(str, env)
     env.math = math
@@ -36,7 +36,9 @@ local function processString(str, env)
     end
     local f = load("return " .. str, "", nil, env)
 
-    if(f==nil)then error(str.." - is not a valid dynamic value string") end
+    if (f == nil) then
+        error(str .. " - is not a valid dynamic value string")
+    end
     return f()
 end
 
@@ -51,79 +53,84 @@ local function dynamicValue(element, name, dynamicString)
         needsUpdate = true
     end
 
-    for v in dynamicString:gmatch("%a+%.%a+")do
+    for v in dynamicString:gmatch("%a+%.%a+") do
         local name = v:gsub("%.%a+", "")
         local prop = v:gsub("%a+%.", "")
-        if(elementGroup[name]==nil)then
+        if (elementGroup[name] == nil) then
             elementGroup[name] = {}
         end
         table.insert(elementGroup[name], prop)
     end
 
-    for k,v in pairs(elementGroup) do
-        if(k=="self") then
+    for k, v in pairs(elementGroup) do
+        if (k == "self") then
             for _, b in pairs(v) do
-                if(name~=b)then
+                if (name ~= b) then
                     element:addPropertyObserver(b, updateFunc)
-                    if(b=="clicked")or(b=="dragging")then
+                    if (b == "clicked") or (b == "dragging") then
                         element:listenEvent("mouse_click")
                         element:listenEvent("mouse_up")
                     end
-                    if(b=="dragging")then
+                    if (b == "dragging") then
                         element:listenEvent("mouse_drag")
                     end
-                    if(b=="hovered")then
+                    if (b == "hovered") then
                         element:listenEvent("mouse_move")
                     end
-                    table.insert(observers, {ele=element, name=b})
+                    table.insert(observers, {
+                        ele = element,
+                        name = b
+                    })
                 else
                     error("Dynamic Values - self reference to self")
                 end
             end
         end
 
-        if(k=="parent") then
+        if (k == "parent") then
             for _, b in pairs(v) do
                 element.parent:addPropertyObserver(b, updateFunc)
-                table.insert(observers, {ele=element.parent, name=b})
+                table.insert(observers, {
+                    ele = element.parent,
+                    name = b
+                })
             end
         end
 
-        if(k~="self" and k~="parent")and(protectedNames[k]==nil)then
+        if (k ~= "self" and k ~= "parent") and (protectedNames[k] == nil) then
             local ele = element:getParent():getChild(k)
-            if (ele == nil) then error("Dynamic Values - reference not found: "..'"'..k..'"') end
+            if (ele == nil) then error("Dynamic Values - reference not found: " .. '"' .. k .. '"') end
             for _, b in pairs(v) do
                 ele:addPropertyObserver(b, updateFunc)
-                table.insert(observers, {ele=ele, name=b})
+                table.insert(observers, {ele = ele, name = b})
             end
         end
     end
 
-
     local function calculate()
         local env = {}
         local parent = element:getParent()
-        for k,v in pairs(elementGroup)do
+        for k, v in pairs(elementGroup) do
             local eleTable = {}
 
-            if(k=="self")then
-                for _,b in pairs(v)do
+            if (k == "self") then
+                for _, b in pairs(v) do
                     eleTable[b] = element:getProperty(b)
                 end
             end
 
-            if(k=="parent")then
-                for _,b in pairs(v)do
+            if (k == "parent") then
+                for _, b in pairs(v) do
                     eleTable[b] = parent:getProperty(b)
                 end
             end
 
-            if(k~="self")and(k~="parent")and(protectedNames[k]==nil)then
+            if (k ~= "self") and (k ~= "parent") and (protectedNames[k] == nil) then
                 local ele = parent:getChild(k)
-                if(ele==nil)then
-                    error("Dynamic Values - unable to find element: "..k)
+                if (ele == nil) then
+                    error("Dynamic Values - unable to find element: " .. k)
                 end
-                for _,b in pairs(v)do
+                for _, b in pairs(v) do
                     eleTable[b] = ele:getProperty(b)
                 end
             end
@@ -134,7 +141,7 @@ local function dynamicValue(element, name, dynamicString)
 
     return {
         get = function(self)
-            if(needsUpdate)then
+            if (needsUpdate) then
                 cachedValue = calculate()
                 needsUpdate = false
                 element:forcePropertyObserverUpdate(name)
@@ -143,15 +150,15 @@ local function dynamicValue(element, name, dynamicString)
             return cachedValue
         end,
         removeObservers = function(self)
-            for _,v in pairs(observers)do
+            for _, v in pairs(observers) do
                 v.ele:removePropertyObserver(v.name, updateFunc)
             end
-        end,
+        end
     }
 end
 
 local function filterDynValues(self, name, value)
-    if(type(value)=="string")and(value:sub(1,1)=="{")and(value:sub(-1)=="}")then
+    if (type(value) == "string") and (value:sub(1, 1) == "{") and (value:sub(-1) == "}") then
         self.dynValues[name] = dynamicValue(self, name, value)
         value = self.dynValues[name].get
     end
@@ -169,10 +176,10 @@ end
 function DynExtension.init(original)
     local setProp = original.setProperty
     original.setProperty = function(self, name, value, rule)
-        if(self.dynValues==nil)then
+        if (self.dynValues == nil) then
             self.dynValues = {}
         end
-        if(self.dynValues[name]~=nil)then
+        if (self.dynValues[name] ~= nil) then
             self.dynValues[name].removeObservers()
         end
         self.dynValues[name] = nil

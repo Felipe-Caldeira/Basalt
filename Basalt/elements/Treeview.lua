@@ -17,19 +17,19 @@ Treeview:initialize("Treeview")
 --- @return Treeview
 ---@protected
 function Treeview:new(id, parent, basalt)
-  local newInstance = VisualElement:new(id, parent, basalt)
-  setmetatable(newInstance, self)
-  self.__index = self
-  newInstance:setType("Treeview")
-  newInstance:create("Treeview")
-  newInstance:setSize(10, 8)
-  newInstance:setZ(5)
-  return newInstance
+    local newInstance = VisualElement:new(id, parent, basalt)
+    setmetatable(newInstance, self)
+    self.__index = self
+    newInstance:setType("Treeview")
+    newInstance:create("Treeview")
+    newInstance:setSize(10, 8)
+    newInstance:setZ(5)
+    return newInstance
 end
 
 ---@protected
 function Treeview:render()
-  VisualElement.render(self)
+    VisualElement.render(self)
 
 end
 

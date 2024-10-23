@@ -19,14 +19,14 @@ ScrollableFrame:addProperty("scrollAmount", "number", 10)
 --- @return ScrollableFrame
 ---@protected
 function ScrollableFrame:new(id, parent, basalt)
-  local newInstance = Container:new(id, parent, basalt)
-  setmetatable(newInstance, self)
-  self.__index = self
-  newInstance:setType("ScrollableFrame")
-  newInstance:create("ScrollableFrame")
-  newInstance:setZ(10)
-  newInstance:setSize(30, 15)
-  return newInstance
+    local newInstance = Container:new(id, parent, basalt)
+    setmetatable(newInstance, self)
+    self.__index = self
+    newInstance:setType("ScrollableFrame")
+    newInstance:create("ScrollableFrame")
+    newInstance:setZ(10)
+    newInstance:setSize(30, 15)
+    return newInstance
 end
 
 ScrollableFrame:extend("Load", function(self)
@@ -35,7 +35,7 @@ end)
 
 local function getScrollableVerticalAmount(self)
     local amount = 0
-    for _,v in pairs(self:getChildren())do
+    for _, v in pairs(self:getChildren()) do
         amount = math.max(amount, v:getY() + v:getHeight())
     end
     return amount - self:getHeight()
@@ -43,7 +43,7 @@ end
 
 local function getScrollableHorizontalAmount(self)
     local amount = 0
-    for k,v in pairs(self:getChildren())do
+    for k, v in pairs(self:getChildren()) do
         amount = math.max(amount, v:getX() + v:getWidth())
     end
     return amount - self:getWidth()
@@ -60,18 +60,18 @@ function ScrollableFrame:scrollVertical(amount)
     local maxScrollAmount = 0
     local currentScroll = self:getYOffset()
     local height = self:getHeight()
-    if(autoScroll)then
+    if (autoScroll) then
         maxScrollAmount = getScrollableVerticalAmount(self)
     else
         maxScrollAmount = self:getScrollAmount() + height
     end
 
-    if(amount > 0)then
-        if(currentScroll < maxScrollAmount)then
+    if (amount > 0) then
+        if (currentScroll < maxScrollAmount) then
             self:setYOffset(currentScroll + amount)
         end
     else
-        if(currentScroll > 0)then
+        if (currentScroll > 0) then
             self:setYOffset(currentScroll + amount)
         end
     end
@@ -86,10 +86,10 @@ end
 function ScrollableFrame:getAllowedScrollAmount()
     expect(1, self, "table")
     local scrollDirection = self:getScrollDirection()
-    if not(self:getAutoScroll())then
+    if not (self:getAutoScroll()) then
         return self:getScrollAmount()
     end
-    if(scrollDirection == "vertical")then
+    if (scrollDirection == "vertical") then
         return getScrollableVerticalAmount(self)
     else
         return getScrollableHorizontalAmount(self)
@@ -107,18 +107,18 @@ function ScrollableFrame:scrollHorizontal(amount)
     local maxScrollAmount = 0
     local currentScroll = self:getXOffset()
     local width = self:getWidth()
-    if(autoScroll)then
+    if (autoScroll) then
         maxScrollAmount = getScrollableHorizontalAmount(self)
     else
         maxScrollAmount = self:getScrollAmount() + width
     end
 
-    if(amount > 0)then
-        if(currentScroll < maxScrollAmount)then
+    if (amount > 0) then
+        if (currentScroll < maxScrollAmount) then
             self:setXOffset(currentScroll + amount)
         end
     else
-        if(currentScroll > 0)then
+        if (currentScroll > 0) then
             self:setXOffset(currentScroll + amount)
         end
     end
@@ -127,22 +127,21 @@ function ScrollableFrame:scrollHorizontal(amount)
     return self
 end
 
-
 ---@protected
 function ScrollableFrame:mouse_scroll(direction, x, y)
-    if(VisualElement.mouse_scroll(self, direction, x, y))then
+    if (VisualElement.mouse_scroll(self, direction, x, y)) then
         local visibleChildren = self:getVisibleChildrenEvents("mouse_scroll")
-        for _,child in pairs(visibleChildren)do
-        if(child and child.mouse_scroll~=nil)then
-            local relX, relY = self:getRelativePosition(x, y)
-            if(child.mouse_scroll(child, direction, relX, relY))then
-            self:setFocusedChild(child, true)
-            return true
+        for _, child in pairs(visibleChildren) do
+            if (child and child.mouse_scroll ~= nil) then
+                local relX, relY = self:getRelativePosition(x, y)
+                if (child.mouse_scroll(child, direction, relX, relY)) then
+                    self:setFocusedChild(child, true)
+                    return true
+                end
             end
         end
-        end
         local scrollDirection = self:getScrollDirection()
-        if(scrollDirection == "vertical")then
+        if (scrollDirection == "vertical") then
             self:scrollVertical(direction)
         else
             self:scrollHorizontal(direction)

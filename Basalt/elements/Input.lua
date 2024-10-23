@@ -27,14 +27,14 @@ Input:addListener("enter", "enter_pressed")
 --- @return Input
 ---@protected
 function Input:new(id, parent, basalt)
-  local newInstance = VisualElement:new(id, parent, basalt)
-  setmetatable(newInstance, self)
-  self.__index = self
-  newInstance:setType("Input")
-  newInstance:create("Input")
-  newInstance:setSize(10, 1)
-  newInstance:setZ(5)
-  return newInstance
+    local newInstance = VisualElement:new(id, parent, basalt)
+    setmetatable(newInstance, self)
+    self.__index = self
+    newInstance:setType("Input")
+    newInstance:create("Input")
+    newInstance:setSize(10, 1)
+    newInstance:setZ(5)
+    return newInstance
 end
 
 ---@protected
@@ -43,18 +43,18 @@ function Input.render(self)
     local text = self:getValue()
     local width = self:getWidth()
     local placeHolderActive = false
-    if(text == "")then
+    if (text == "") then
         text = self:getPlaceholderText()
         placeHolderActive = true
     end
     local visibleText = text:sub(self.scrollIndex, self.scrollIndex + width - 1)
-    if(self.inputType=="password")then
+    if (self.inputType == "password") then
         visibleText = ("*"):rep(visibleText:len())
     end
     local space = (" "):rep(width - visibleText:len())
     visibleText = visibleText .. space
     self:addText(1, 1, visibleText)
-    if(placeHolderActive)then
+    if (placeHolderActive) then
         self:addBg(1, 1, tHex[self:getPlaceholderBackground()]:rep(width))
         self:addFg(1, 1, tHex[self:getPlaceholderColor()]:rep(visibleText:len()))
     end
@@ -73,8 +73,8 @@ end
 
 ---@protected
 function Input:mouse_up(button, x, y)
-    if(VisualElement.mouse_up(self, button, x, y))then
-        if(button == 1)then
+    if (VisualElement.mouse_up(self, button, x, y)) then
+        if (button == 1) then
             local xPos, yPos = self:getPosition()
             local cursorIndex = self:getCursorIndex()
             local scrollIndex = self:getScrollIndex()
@@ -88,12 +88,12 @@ end
 
 ---@protected
 function Input:key(key)
-    if(VisualElement.key(self, key))then
+    if (VisualElement.key(self, key)) then
         local xPos, yPos = self:getPosition()
         local cursorIndex = self:getCursorIndex()
         local value = self:getValue()
         if key == keys.backspace and value ~= "" and cursorIndex > 1 then
-            local before = value:sub(1, cursorIndex-2)
+            local before = value:sub(1, cursorIndex - 2)
             local after = value:sub(cursorIndex, -1)
             self:setValue(before .. after)
             self:setCursorIndex(cursorIndex - 1)
@@ -120,7 +120,7 @@ end
 
 ---@protected
 function Input:char(char)
-    if(VisualElement.char(self, char))then
+    if (VisualElement.char(self, char)) then
         local xPos, yPos = self:getPosition()
         local cursorIndex = self:getCursorIndex()
         local inputType = self:getInputType()
@@ -136,7 +136,7 @@ function Input:char(char)
                 return true
             end
         end
-        local before = value:sub(1, cursorIndex-1)
+        local before = value:sub(1, cursorIndex - 1)
         local after = value:sub(cursorIndex, -1)
         self:setValue(before .. char .. after)
         self:setCursorIndex(cursorIndex + 1)

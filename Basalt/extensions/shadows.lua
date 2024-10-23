@@ -1,4 +1,3 @@
-
 local shadowExtension = {}
 local tHex = require("utils").tHex
 
@@ -15,39 +14,39 @@ function shadowExtension.init(original)
         self.render = function(self)
             originalRender(self)
             local shadow = self:getShadow()
-            if(shadow)then
+            if (shadow) then
                 local width, height = self:getSize()
                 local shadowColor = tHex[self:getShadowColor()]
                 local shadowDirection = self:getShadowDirection()
-                if(shadowDirection=="bottomRight")then
-                    for i=1, height do
-                        self:addBlit(width+1, i+1, " ", shadowColor, shadowColor, true)
+                if (shadowDirection == "bottomRight") then
+                    for i = 1, height do
+                        self:addBlit(width + 1, i + 1, " ", shadowColor, shadowColor, true)
                     end
-                    for i=2, width do
-                        self:addBlit(i, height+1, " ", shadowColor, shadowColor, true)
-                    end
-                end
-                if(shadowDirection=="bottomLeft")then
-                    for i=1, height do
-                        self:addBlit(0, i+1, " ", shadowColor, shadowColor, true)
-                    end
-                    for i=1, width do
-                        self:addBlit(i, height+1, " ", shadowColor, shadowColor, true)
+                    for i = 2, width do
+                        self:addBlit(i, height + 1, " ", shadowColor, shadowColor, true)
                     end
                 end
-                if(shadowDirection=="topRight")then
-                    for i=0, height-1 do
-                        self:addBlit(width+1, i, " ", shadowColor, shadowColor, true)
+                if (shadowDirection == "bottomLeft") then
+                    for i = 1, height do
+                        self:addBlit(0, i + 1, " ", shadowColor, shadowColor, true)
                     end
-                    for i=2, width do
+                    for i = 1, width do
+                        self:addBlit(i, height + 1, " ", shadowColor, shadowColor, true)
+                    end
+                end
+                if (shadowDirection == "topRight") then
+                    for i = 0, height - 1 do
+                        self:addBlit(width + 1, i, " ", shadowColor, shadowColor, true)
+                    end
+                    for i = 2, width do
                         self:addBlit(i, 0, " ", shadowColor, shadowColor, true)
                     end
                 end
-                if(shadowDirection=="topLeft")then
-                    for i=0, height-1 do
+                if (shadowDirection == "topLeft") then
+                    for i = 0, height - 1 do
                         self:addBlit(0, i, " ", shadowColor, shadowColor, true)
                     end
-                    for i=1, width-1 do
+                    for i = 1, width - 1 do
                         self:addBlit(i, 0, " ", shadowColor, shadowColor, true)
                     end
                 end
@@ -57,7 +56,6 @@ function shadowExtension.init(original)
     end)
 end
 
-
 return {
-    VisualElement = shadowExtension,
+    VisualElement = shadowExtension
 }

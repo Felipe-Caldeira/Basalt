@@ -27,11 +27,11 @@ local function _expect(argument, ...)
                 end
             end
         elseif expected == "dynValue" then
-            if type(arg) == "string" and arg:sub(1,1) == "{" and arg:sub(-1) == "}" then
+            if type(arg) == "string" and arg:sub(1, 1) == "{" and arg:sub(-1) == "}" then
                 valid = true
                 return true
             end
-        elseif type(arg)=="table" and arg.isType~=nil then
+        elseif type(arg) == "table" and arg.isType ~= nil then
             for _, expectedType in ipairs(types) do
                 if arg:isType(expectedType) then
                     valid = true
@@ -53,7 +53,7 @@ local function _expect(argument, ...)
             break
         end
     end
-    
+
     if not valid then
         local traceback = debug.traceback()
         local location, lineNumber, functionName
@@ -95,22 +95,26 @@ local function _expect(argument, ...)
 end
 
 function expect.expect(position, argument, ...)
-    if(position==nil)then position = 1 end
-    if(argument==nil)then return end
+    if (position == nil) then
+        position = 1
+    end
+    if (argument == nil) then
+        return
+    end
     local types = {...}
     local location, lineNumber, functionName, traceback = _expect(argument, ...)
-    if(location~=true)then
+    if (location ~= true) then
         local fileName = location:gsub("^%s+", "")
-        if(expect.basalt~=nil)then
+        if (expect.basalt ~= nil) then
             expect.basalt.stop()
         end
         coloredPrint("Basalt Initialization Error:", colors.red)
         print(traceback)
         print()
-        if(location:sub(1,1)=="/")then
+        if (location:sub(1, 1) == "/") then
             fileName = location:sub(2)
         end
-        
+
         term.setTextColor(colors.red)
         term.write("Error in ")
         term.setTextColor(colors.white)
@@ -121,7 +125,8 @@ function expect.expect(position, argument, ...)
         term.write(lineNumber)
         term.setTextColor(colors.red)
         term.write(": ")
-        coloredPrint("Invalid argument in function '" .. functionName .. ":"..position.."'. Expected " .. table.concat(types, ", ") .. ", got " .. type(argument), colors.red)
+        coloredPrint("Invalid argument in function '" .. functionName .. ":" .. position .. "'. Expected " ..
+                         table.concat(types, ", ") .. ", got " .. type(argument), colors.red)
         local file = fs.open(location:gsub("^%s+", ""), "r")
         if file then
             print()
@@ -131,16 +136,16 @@ function expect.expect(position, argument, ...)
                 lineContent = file.readLine()
                 if currentLineNumber == tonumber(lineNumber) then
                     coloredPrint("\149Line " .. lineNumber, colors.cyan)
-                    coloredPrint("  "..lineContent, colors.lightGray)
+                    coloredPrint("  " .. lineContent, colors.lightGray)
                     break
                 end
                 currentLineNumber = currentLineNumber + 1
             until not lineContent
             file.close()
         else
-            error("Unable to open file "..location:gsub("^%s+", "")..".")
+            error("Unable to open file " .. location:gsub("^%s+", "") .. ".")
         end
-        --error()
+        -- error()
         return false
     end
     return true

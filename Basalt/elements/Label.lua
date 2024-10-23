@@ -17,11 +17,11 @@ Label:addProperty("wrappedText", "table", {}, nil, function(self, value)
 end, function(self)
     local wrap = self:getWrap()
     local autoSize = self:getAutoSize()
-    if(self:getWrapUpdate())then
+    if (self:getWrapUpdate()) then
         self:setWrapUpdate(false)
         self.wrappedText = wrapText(self:getText(), self:getWidth())
     end
-    if(autoSize)and(wrap)then
+    if (autoSize) and (wrap) then
         self:setHeight(#self.wrappedText)
         self:updateRender()
     end
@@ -30,10 +30,10 @@ end)
 Label:addProperty("text", "string", "My Label", nil, function(self, value)
     local wrap = self:getWrap()
     local autoSize = self:getAutoSize()
-    if(wrap)then
+    if (wrap) then
         self:setWrapUpdate(true)
     end
-    if(autoSize)and not(wrap)then
+    if (autoSize) and not (wrap) then
         self:setSize(value:len(), 1)
     end
 end)
@@ -51,16 +51,16 @@ function Label:new(id, parent, basalt)
     self.__index = self
     newInstance:setType("Label")
     newInstance:create("Label")
-  return newInstance
+    return newInstance
 end
- 
+
 ---@protected
 Label:extend("Init", function(self)
     self:setBackground(self.parent:getBackground())
     self:setForeground(self.parent:getForeground())
 
     self:addPropertyObserver("width", function()
-        if(self.autoSize)and(self.wrap)then
+        if (self.autoSize) and (self.wrap) then
             self:setWrapUpdate(true)
             local lines = self:getWrappedText()
             self:setHeight(#lines)
@@ -73,11 +73,11 @@ function Label:render()
     VisualElement.render(self)
     local text = self:getText()
     local wrap = self:getWrap()
-    if(wrap)then
+    if (wrap) then
         local lines = self:getWrappedText()
         local height = self:getHeight()
         for i, line in ipairs(lines) do
-            if(i <= height)then
+            if (i <= height) then
                 self:addText(1, i, line)
             end
         end

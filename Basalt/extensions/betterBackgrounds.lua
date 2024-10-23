@@ -1,6 +1,4 @@
-
 local bbgExtension = {}
-
 
 function bbgExtension.extensionProperties(original)
     original:initialize("VisualElement")
@@ -14,10 +12,10 @@ function bbgExtension.init(original)
         self.render = function(self)
             originalRender(self)
             local bg = self:getBackgroundSymbol()
-            if(bg~="")or(bg~=" ")then
+            if (bg ~= "") or (bg ~= " ") then
                 local width, height = self:getSize()
-                bg = bg:sub(1,1)
-                for i=1, height do
+                bg = bg:sub(1, 1)
+                for i = 1, height do
                     self:addText(1, i, bg:rep(width))
                 end
             end
@@ -26,7 +24,6 @@ function bbgExtension.init(original)
     end)
 end
 
-
 return {
-    VisualElement = bbgExtension,
+    VisualElement = bbgExtension
 }
