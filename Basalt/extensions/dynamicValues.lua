@@ -91,6 +91,7 @@ local function dynamicValue(element, name, dynamicString)
 
         if(k~="self" and k~="parent")and(protectedNames[k]==nil)then
             local ele = element:getParent():getChild(k)
+            if (ele == nil) then error("Dynamic Values - reference not found: "..'"'..k..'"') end
             for _, b in pairs(v) do
                 ele:addPropertyObserver(b, updateFunc)
                 table.insert(observers, {ele=ele, name=b})
