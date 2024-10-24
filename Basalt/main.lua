@@ -260,6 +260,7 @@ end
 function basalt.getMainFrame()
     if (mainFrame == nil) then
         mainFrame = basalt.addFrame("mainFrame")
+        basalt.setFocusedFrame(mainFrame)
     end
     return mainFrame
 end
@@ -277,6 +278,7 @@ function basalt.addFrame(id)
     frame:init()
     if (mainFrame == nil) then
         mainFrame = frame
+        basalt.setFocusedFrame(mainFrame)
     end
     table.insert(frames, frame)
     return frame

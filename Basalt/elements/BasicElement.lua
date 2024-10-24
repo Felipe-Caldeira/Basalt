@@ -310,6 +310,19 @@ function Element:getRoot()
     return self
 end
 
+--- Sets focus on the element
+--- @param self Element
+function Element:focus()
+    expect(1, self, "table")
+    if self.parent ~= nil then
+        self.parent:focus() 
+        return self.parent:setFocusedChild(self)
+    else
+       self.basalt.setFocusedFrame(self) 
+    end
+    return self
+end
+
 ---@protected
 function Element:initialize(typ)
     activeType = typ
