@@ -360,28 +360,16 @@ end
 --- @param id string -- The id of the element
 --- @param parent Container|nil -- The parent frame of the element
 --- @param typ string -- The type of the element
---- @param defaultProperties? table -- The default properties of the element
 --- @return BasicElement
-function basalt.create(id, parent, typ, defaultProperties)
+function basalt.create(id, parent, typ)
     expect(1, id, "string")
     expect(2, parent, "nil", "Container")
     expect(3, typ, "string")
-    expect(4, defaultProperties, "table", "nil")
     local l = loader.load(typ)
     if (type(l) == "string") then
         l = load(l, nil, "t", _ENV)()
     end
     local element = l:new(id, parent, basalt)
-    if (defaultProperties ~= nil) then
-        for k, v in pairs(defaultProperties) do
-            local fName = "set" .. k:sub(1, 1):upper() .. k:sub(2)
-            if (element[fName] ~= nil) then
-                element[fName](element, v)
-            else
-                element[k] = v
-            end
-        end
-    end
     return element
 end
 

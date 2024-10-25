@@ -71,11 +71,7 @@ function TempExtension.init(original, basalt)
         if (template ~= nil) then
             for k, v in pairs(template) do
                 if (elements[k] == nil) then
-                    if (colors[v] ~= nil) then
-                        self:setProperty(k, colors[v])
-                    else
-                        self:setProperty(k, v)
-                    end
+                    self:setProperty(k, v)
                     self._templateValues[k] = true
                 end
             end
@@ -90,11 +86,7 @@ function TempExtension.updateTemplate(self)
         for k, v in pairs(template) do
             if (self._templateValues[k]) then
                 if (elements[k] == nil) then
-                    if (colors[v] ~= nil) then
-                        self:setProperty(k, colors[v])
-                    else
-                        self:setProperty(k, v)
-                    end
+                    self:setProperty(k, v)
                     self._templateValues[k] = true
                 end
             end

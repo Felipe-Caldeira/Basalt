@@ -244,6 +244,9 @@ function Element:addProperty(name, typ, defaultValue, readonly, setLogic, getLog
     if not (readonly) then
         self["set" .. fName] = function(self, value, ...)
             expect(1, self, "table")
+            if typ == "color" and colors[value] ~= nil then
+                value = colors[value]
+            end
             if (setLogic ~= nil) then
                 local modifiedVal = setLogic(self, value, ...)
                 if (modifiedVal ~= nil) then

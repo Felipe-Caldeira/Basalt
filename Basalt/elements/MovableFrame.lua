@@ -110,7 +110,7 @@ function MovableFrame:mouse_drag(button, x, y)
         local dy = y - self.dragY
         self.dragX = x
         self.dragY = y
-        self:setPosition(self.x + dx, self.y + dy)
+        self:setPosition(self:getX() + dx, self:getY() + dy)
         return true
     end
 end

@@ -59,29 +59,28 @@ local function addElement(self, key)
             return function(self, id, x, y, w, h, bg, fg)
                 local uid = id
                 if (type(id) == "table") then
-                    uid = id.name
-                    id.name = nil
+                    uid = id.id
+                    id.id = nil
                 end
-                local element = self.basalt.create(uid or uuid(), self, elementName, type(id) == "table" and id or nil)
+                local element = self.basalt.create(uid or uuid(), self, elementName)
                 self:addChild(element, element:getZ())
-                if (x ~= nil) then
-                    element:setX(x)
+                
+                if (type(id) == "table") then
+                    for k, v in pairs(id) do
+                        local fName = "set" .. k:sub(1, 1):upper() .. k:sub(2)
+                        if (element[fName] ~= nil) then
+                            element[fName](element, v)
+                        else
+                            element[k] = v
+                        end
+                    end
                 end
-                if (y ~= nil) then
-                    element:setY(y)
-                end
-                if (w ~= nil) then
-                    element:setWidth(w)
-                end
-                if (h ~= nil) then
-                    element:setHeight(h)
-                end
-                if (bg ~= nil) then
-                    element:setBackground(bg)
-                end
-                if (fg ~= nil) then
-                    element:setForeground(fg)
-                end
+                if (x ~= nil) then element:setX(x) end
+                if (y ~= nil) then element:setY(y) end
+                if (w ~= nil) then element:setWidth(w) end
+                if (h ~= nil) then element:setHeight(h) end
+                if (bg ~= nil) then element:setBackground(bg) end
+                if (fg ~= nil) then element:setForeground(fg) end
                 return element
             end
         end
