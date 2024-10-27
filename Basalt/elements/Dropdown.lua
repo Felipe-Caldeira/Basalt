@@ -47,11 +47,11 @@ function Dropdown:render()
             if item then
                 self:addText(1, i + 1, item .. (" "):rep(self.dropdownWidth - item:len()))
                 if (i + scrollIndex - 1 == selectedIndex) then
-                    self:addBg(1, i + 1, tHex[self.selectionBackground]:rep(self.dropdownWidth))
-                    self:addFg(1, i + 1, tHex[self.selectionForeground]:rep(self.dropdownWidth))
+                    self:addBg(1, i + 1, tHex[self:getSelectionBackground()]:rep(self.dropdownWidth))
+                    self:addFg(1, i + 1, tHex[self:getSelectionForeground()]:rep(self.dropdownWidth))
                 else
-                    self:addBg(1, i + 1, tHex[self.background]:rep(self.dropdownWidth))
-                    self:addFg(1, i + 1, tHex[self.foreground]:rep(self.dropdownWidth))
+                    self:addBg(1, i + 1, tHex[self:getBackground()]:rep(self.dropdownWidth))
+                    self:addFg(1, i + 1, tHex[self:getForeground()]:rep(self.dropdownWidth))
                 end
             end
         end
@@ -65,8 +65,9 @@ function Dropdown:mouse_click(button, x, y)
         return true
     end
     if self.opened then
-        if (x >= self.x and x <= self.x + self.dropdownWidth and y >= self.y + 1 and y <= self.y + self.dropdownHeight) then
-            self.selectedIndex = y - self.y + self.scrollIndex - 1
+        local currX, currY = self:getX(), self:getY()
+        if (x >= currX and x <= currX + self.dropdownWidth and y >= currY + 1 and y <= currY + self.dropdownHeight) then
+            self.selectedIndex = y - currY + self.scrollIndex - 1
             self:fireEvent("change", self.items[self.selectedIndex])
             self.basalt.thread(function()
                 sleep(0.1)
@@ -85,7 +86,8 @@ function Dropdown:mouse_scroll(direction, x, y)
         self:updateRender()
     end
     if self:getOpened() then
-        if (x >= self.x and x <= self.x + self.dropdownWidth and y >= self.y + 1 and y <= self.y + self.dropdownHeight) then
+        local currX, currY = self:getX(), self:getY()
+        if (x >= currX and x <= currX + self.dropdownWidth and y >= currY + 1 and y <= currY + self.dropdownHeight) then
             if direction == -1 then
                 self.scrollIndex = math.max(self.scrollIndex - 1, 1)
             else

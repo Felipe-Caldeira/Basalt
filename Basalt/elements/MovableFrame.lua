@@ -49,10 +49,10 @@ function MovableFrame:isInDragMap(x, y)
     for _, v in pairs(self.dragMap) do
         local w, h = v.w - 1, v.h - 1
         if (v.w <= 0) then
-            w = self.width
+            w = self:getWidth()
         end
         if (v.h <= 0) then
-            h = self.height
+            h = self:getHeight()
         end
         if (x >= v.x and x <= v.x + w and y >= v.y and y <= v.y + h) then
             return true

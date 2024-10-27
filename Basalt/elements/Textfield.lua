@@ -79,8 +79,8 @@ function TextField:updateCursor()
     expect(1, self, "table")
     if self.cursorIndex >= self.scrollIndexX and self.cursorIndex < self.scrollIndexX + self.width and self.lineIndex >=
         self.scrollIndexY and self.lineIndex < self.scrollIndexY + self.height then
-        self.parent:setCursor(true, self.x + self.cursorIndex - self.scrollIndexX,
-            self.y + self.lineIndex - self.scrollIndexY, self:getForeground())
+        self.parent:setCursor(true, self:getX() + self.cursorIndex - self.scrollIndexX,
+            self:getY() + self.lineIndex - self.scrollIndexY, self:getForeground())
     else
         self.parent:setCursor(false)
     end
@@ -142,8 +142,8 @@ function TextField:mouse_click(button, x, y)
     if (VisualElement.mouse_click(self, button, x, y)) then
         if (button == 1) then
             if (#self.lines > 0) then
-                self.lineIndex = math.min(y - self.y + self.scrollIndexY, #self.lines)
-                self.cursorIndex = math.min(x - self.x + self.scrollIndexX, self.lines[self.lineIndex]:len() + 1)
+                self.lineIndex = math.min(y - self:getY() + self.scrollIndexY, #self.lines)
+                self.cursorIndex = math.min(x - self:getX() + self.scrollIndexX, self.lines[self.lineIndex]:len() + 1)
                 self:adjustScrollIndices(true)
             else
                 self.lineIndex = 1

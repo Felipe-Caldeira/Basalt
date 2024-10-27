@@ -30,7 +30,7 @@ end
 function Menubar:mouse_click(button, x, y)
     if (VisualElement.mouse_click(self, button, x, y)) then
         if (button == 1) then
-            local cumulativeWidth = self.x
+            local cumulativeWidth = self:getX()
             for i = self.scrollIndex, #self.items do
                 local itemWidth = #self.items[i] + self.spacing
                 if x >= cumulativeWidth and x < cumulativeWidth + itemWidth then
@@ -50,16 +50,17 @@ function Menubar:render()
     VisualElement.render(self)
     local currentIndex = self.scrollIndex
     local currentX = 1
-    self:addText(1, 1, (" "):rep(self.width))
-    self:addBg(1, 1, tHex[self.background]:rep(self.width))
-    self:addFg(1, 1, tHex[self.foreground]:rep(self.width))
-    while currentX <= self.width and currentIndex <= #self.items do
+    local width = self:getWidth()
+    self:addText(1, 1, (" "):rep(width))
+    self:addBg(1, 1, tHex[self:getBackground()]:rep(width))
+    self:addFg(1, 1, tHex[self:getForeground()]:rep(width))
+    while currentX <= width and currentIndex <= #self.items do
         local item = self.items[currentIndex]
-        if currentX + #item - 1 + self.spacing <= self.width then
+        if currentX + #item - 1 + self.spacing <= width then
             self:addText(currentX, 1, item)
             if currentIndex == self.selectedIndex then
-                self:addBg(currentX, 1, tHex[self.selectionBackground]:rep(#item))
-                self:addFg(currentX, 1, tHex[self.selectionForeground]:rep(#item))
+                self:addBg(currentX, 1, tHex[self:getSelectionBackground()]:rep(#item))
+                self:addFg(currentX, 1, tHex[self:getSelectionForeground()]:rep(#item))
             end
             currentX = currentX + #item + self.spacing
         else
@@ -89,13 +90,13 @@ function Menubar:getVisibleItems()
     local visibleItems = 0
     local currentIndex = self.scrollIndex
     local currentWidth = 1
-    while currentWidth <= self.width and currentIndex <= #self.items do
+    while currentWidth <= self:getWidth() and currentIndex <= #self.items do
         local item = self.items[currentIndex]
-        if currentWidth + #item - 1 + self.spacing <= self.width then
+        if currentWidth + #item - 1 + self.spacing <= self:getWidth() then
             visibleItems = visibleItems + 1
             currentWidth = currentWidth + #item + self.spacing
         else
-            if currentWidth + #item - 1 <= self.width then
+            if currentWidth + #item - 1 <= self:getWidth() then
                 visibleItems = visibleItems + 1
             end
             break
