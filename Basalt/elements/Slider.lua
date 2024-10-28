@@ -114,7 +114,7 @@ function Slider:render()
     local bar = (self.bgSymbol):rep(width)
     local knobPosition = math.floor((value - minValue) / (maxValue - minValue) * (width - 1) + 0.5)
     bar = bar:sub(1, knobPosition) .. self.knobSymbol .. bar:sub(knobPosition + 2, -1)
-    self:addText(1, 1, bar)
+    self:addTxt(1, 1, bar)
     self:addBg(knobPosition + 1, 1, tHex[self:getKnobBackground()])
     self:addFg(knobPosition + 1, 1, tHex[self:getKnobForeground()])
 end

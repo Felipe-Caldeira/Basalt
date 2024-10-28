@@ -96,8 +96,8 @@ function Scrollbar:render()
     element:addBackgroundBox(width, 1, 1, height, background)
     element:addForegroundBox(width, 1, 1, height, foreground)
     if (self.arrowsEnabled) then
-        element:addText(width, height, self.arrowDown, true)
-        element:addText(width, 1, self.arrowUp, true)
+        element:addTxt(width, height, self.arrowDown, true)
+        element:addTxt(width, 1, self.arrowUp, true)
         element:addTextBox(width, 2, 1, height - 2, self.barSymbol)
     else
         element:addTextBox(width, 1, 1, height, self.barSymbol)

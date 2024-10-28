@@ -38,9 +38,9 @@ function Checkbox:render()
     VisualElement.render(self)
     local xO, yO = getCenteredPosition(self.checkedSymbol, self:getWidth(), self:getHeight())
     if self.checked then
-        self:addText(xO, yO, self.checkedSymbol)
+        self:addTxt(xO, yO, self.checkedSymbol)
     else
-        self:addText(xO, yO, " ")
+        self:addTxt(xO, yO, " ")
     end
 end
 

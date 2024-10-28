@@ -53,7 +53,7 @@ function Input.render(self)
     end
     local space = (" "):rep(width - visibleText:len())
     visibleText = visibleText .. space
-    self:addText(1, 1, visibleText)
+    self:addTxt(1, 1, visibleText)
     if (placeHolderActive) then
         self:addBg(1, 1, tHex[self:getPlaceholderBackground()]:rep(width))
         self:addFg(1, 1, tHex[self:getPlaceholderColor()]:rep(visibleText:len()))

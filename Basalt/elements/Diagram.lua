@@ -50,7 +50,7 @@ function Diagram:render()
             x = x * zoom
             y = y * zoom
         end
-        self:addText(x, y, "a")
+        self:addTxt(x, y, "a")
     end
 end
 

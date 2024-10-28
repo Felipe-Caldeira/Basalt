@@ -37,18 +37,18 @@ function Dropdown:render()
     local selectedIndex = self:getSelectedIndex()
     local scrollIndex = self:getScrollIndex()
     if self.items[selectedIndex] then
-        self:addText(1, 1, self.items[selectedIndex])
-        self:addText(self:getWidth(), 1, "\16")
+        self:addTxt(1, 1, self.items[selectedIndex].label)
+        self:addTxt(self:getWidth(), 1, "\16")
     end
     if self.opened then
-        self:addText(self:getWidth(), 1, "\31")
+        self:addTxt(self:getWidth(), 1, "\31")
         for i = 1, self.dropdownHeight do
             local item = self.items[i + scrollIndex - 1]
             if item then
-                self:addText(1, i + 1, item .. (" "):rep(self.dropdownWidth - item:len()))
+                self:addTxt(1, i + 1, item.label .. (" "):rep(self.dropdownWidth - item.label:len()))
                 if (i + scrollIndex - 1 == selectedIndex) then
-                    self:addBg(1, i + 1, tHex[self:getSelectionBackground()]:rep(self.dropdownWidth))
-                    self:addFg(1, i + 1, tHex[self:getSelectionForeground()]:rep(self.dropdownWidth))
+                    self:addBg(1, i + 1, tHex[self:getSelectedBackground()]:rep(self.dropdownWidth))
+                    self:addFg(1, i + 1, tHex[self:getSelectedForeground()]:rep(self.dropdownWidth))
                 else
                     self:addBg(1, i + 1, tHex[self:getBackground()]:rep(self.dropdownWidth))
                     self:addFg(1, i + 1, tHex[self:getForeground()]:rep(self.dropdownWidth))
@@ -67,8 +67,9 @@ function Dropdown:mouse_click(button, x, y)
     if self.opened then
         local currX, currY = self:getX(), self:getY()
         if (x >= currX and x <= currX + self.dropdownWidth and y >= currY + 1 and y <= currY + self.dropdownHeight) then
-            self.selectedIndex = y - currY + self.scrollIndex - 1
-            self:fireEvent("change", self.items[self.selectedIndex])
+            local index = y - currY + self.scrollIndex - 1
+            self:setSelectedIndex(index)
+            self:fireEvent("change", self.items[index])
             self.basalt.thread(function()
                 sleep(0.1)
                 self.opened = false
@@ -82,7 +83,7 @@ end
 ---@protected
 function Dropdown:mouse_scroll(direction, x, y)
     if (VisualElement.mouse_scroll(self, direction, x, y)) then
-        self.selectedIndex = math.max(math.min(self.selectedIndex + direction, #self.items), 1)
+        self:setSelectedIndex(math.max(math.min(self:getSelectedIndex() + direction, #self.items), 1))
         self:updateRender()
     end
     if self:getOpened() then

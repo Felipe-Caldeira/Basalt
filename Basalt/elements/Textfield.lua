@@ -46,7 +46,7 @@ function TextField:render()
         end
         local space = (" "):rep(self.width - visibleLine:len())
         visibleLine = visibleLine .. space
-        self:addText(1, i, visibleLine)
+        self:addTxt(1, i, visibleLine)
     end
 end
 

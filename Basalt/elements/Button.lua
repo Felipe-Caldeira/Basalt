@@ -29,7 +29,7 @@ function Button:render()
     VisualElement.render(self)
     local text = self:getText()
     local xO, yO = getCenteredPosition(text, self:getWidth(), self:getHeight())
-    self:addText(xO, yO, text)
+    self:addTxt(xO, yO, text)
 end
 
 return Button

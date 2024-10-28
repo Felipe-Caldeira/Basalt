@@ -30,7 +30,7 @@ VisualElement:addProperty("preRenderData", "table", {})
 VisualElement:addProperty("postRenderData", "table", {})
 
 VisualElement:combineProperty("Size", "width", "height")
-VisualElement:addProperty("transparency", "boolean", false)
+VisualElement:addProperty("transparent", "boolean", false)
 VisualElement:addProperty("ignoreOffset", "boolean", false)
 VisualElement:addProperty("focused", "boolean", false, nil, function(self, value)
     if (value) then
@@ -105,7 +105,7 @@ end
 
 local preF = "pre"
 for _ = 1, 2 do
-    for _, v in pairs({"Text", "Bg", "Fg"}) do
+    for _, v in pairs({"Txt", "Bg", "Fg"}) do
         VisualElement[preF .. v] = function(self, x, y, text)
             local curData = self:getPreRenderData()
             if (preF == "post") then
@@ -192,12 +192,12 @@ for _, v in pairs({"BackgroundBox", "TextBox", "ForegroundBox"}) do
     end
 end
 
-for _, v in pairs({"Text", "Bg", "Fg"}) do
+for _, v in pairs({"Txt", "Bg", "Fg"}) do
     VisualElement["add" .. v] = function(self, x, y, str, ignoreElementSize)
         local obj = self.parent or self
         local xPos, yPos = self:calculatePosition()
         local w, h = self:getSize()
-        local transparent = self:getTransparency()
+        local transparent = self:getTransparent()
         if not (ignoreElementSize) then
             str, x = subText(str, x, w)
         end
@@ -207,7 +207,7 @@ for _, v in pairs({"Text", "Bg", "Fg"}) do
         end
         local t = split(str)
         for _, v in pairs(t) do
-            if (v == "Text") then
+            if (v == "Txt") then
                 if (v.value ~= "") and (v.value ~= "\0") then
                     obj["set" .. v](obj, x + v.x + xPos - 2, y + yPos - 1, v.value)
                 end
@@ -224,7 +224,7 @@ end
 function VisualElement:addBlit(x, y, t, f, b)
     local obj = self.parent or self
     local xPos, yPos = self:calculatePosition()
-    local transparent = self:getTransparency()
+    local transparent = self:getTransparent()
     if not (transparent) then
         obj:blit(x + xPos - 1, y + yPos - 1, t, f, b)
         return
@@ -234,7 +234,7 @@ function VisualElement:addBlit(x, y, t, f, b)
     local _bg = split(b)
     for _, v in pairs(_text) do
         if (v.value ~= "") or (v.value ~= "\0") then
-            obj:setText(x + v.x + xPos - 2, y + yPos - 1, v.value)
+            obj:setTxt(x + v.x + xPos - 2, y + yPos - 1, v.value)
         end
     end
     for _, v in pairs(_bg) do

@@ -455,7 +455,7 @@ function Container:setCursor(blink, cursorX, cursorY, color)
     return self
 end
 
-for _, v in pairs({"setBg", "setFg", "setText"}) do
+for _, v in pairs({"setBg", "setFg", "setTxt"}) do
     ---@protected
     Container[v] = function(self, x, y, str)
         local obx, oby = self:calculatePosition()

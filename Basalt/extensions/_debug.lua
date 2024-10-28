@@ -10,7 +10,7 @@ local function openDebugPanel()
         debug.frames[id] = {}
         debug.frames[id].window = mainFrame:addMovableFrame():setSize(45, 14):setBackground(colors.cyan):setZ(100):setVisible(false)
         debug.frames[id].window:addLabel():setText("Debug Log"):setPosition(1, 1):setSize(45, 1):setForeground(colors.cyan):setBackground(colors.black)
-        debug.frames[id].debugLog = debug.frames[id].window:addList():setPosition(2, 3):setSize(42, 12):setBackground(colors.white):setForeground(colors.black):setSelectionColor(colors.white, colors.black)
+        debug.frames[id].debugLog = debug.frames[id].window:addList():setPosition(2, 3):setSize(42, 12):setBackground(colors.white):setForeground(colors.black):setSelectedColor(colors.white, colors.black)
         debug.frames[id].closeButton = debug.frames[id].window:addButton():setForeground(colors.black):setBackground(colors.red):setSize(1, 1):setText("x"):setPosition("{parent.w}", 1):onClick(function()
             debug.frames[id].window:setVisible(false)
         end)

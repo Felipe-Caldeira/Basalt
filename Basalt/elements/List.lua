@@ -8,57 +8,61 @@ local log = require("log")
 local List = setmetatable({}, VisualElement)
 List.__index = List
 
+--[[ 
+{
+    label = "MyLabel",
+    value = someVal,
+    background = bg,
+    foreground = fg,
+}
+]]
+
 List:initialize("List")
 List:addProperty("items", "table", {})
-List:addProperty("itemsBackground", "table", {})
-List:addProperty("itemsForeground", "table", {})
 List:addProperty("connectedLists", "table", {})
-List:addProperty("selection", "boolean", true)
-List:addProperty("align", "string", "left")
-List:addProperty("multiSelection", "boolean", false)
 List:addProperty("autoScroll", "boolean", false)
+List:addProperty("align", "string", "left")
 List:addProperty("spacing", "number", 0)
-List:addProperty("selectedIndex", "table", {}, nil, function(self, value, sendToOthers)
-    local newValue = self.selectedIndex
-    if (self:getMultiSelection()) then
-        if (type(value) == "table") then
-            newValue = value
-        else
-            if (self:getSelectionState(value)) then
-                for i, v in ipairs(newValue) do
-                    if v == value then
-                        table.remove(newValue, i)
-                        break
-                    end
-                end
+List:addProperty("selectable", "boolean", true)
+List:addProperty("multiSelectable", "boolean", false)
+List:addProperty("selectedIndex", "table", {}, nil, 
+    function(self, value, sendToOthers)
+        local newValue = self.selectedIndex
+        if self:getMultiSelectable() then
+            if type(value) == "table" then
+                newValue = value
             else
-                table.insert(newValue, value)
+                if self:isItemSelected(value) then
+                    for i, v in ipairs(newValue) do
+                        if v == value then
+                            table.remove(newValue, i)
+                            break
+                        end
+                    end
+                else
+                    table.insert(newValue, value)
+                end
             end
+        else
+            newValue = {value}
         end
-        if (sendToOthers ~= false) then
+        if sendToOthers ~= false then
             for _, v in pairs(self:getConnectedLists()) do
                 v:setSelectedIndex(newValue, false)
             end
         end
         return newValue
-    else
-        if (sendToOthers ~= false) then
-            for _, v in pairs(self:getConnectedLists()) do
-                v:setSelectedIndex(value, false)
-            end
+    end, 
+    function(self, value)
+        if (self:getMultiSelectable()) then
+            return value
+        else
+            return value[1]
         end
-        return {value}
-    end
-end, function(self, value)
-    if (self:getMultiSelection()) then
-        return value
-    else
-        return value[1]
-    end
-end)
-List:addProperty("selectionBackground", "color", colors.black)
-List:addProperty("selectionForeground", "color", colors.cyan)
-List:combineProperty("selectionColor", "selectionBackground", "selectionForeground")
+    end)
+List:addProperty("selectedBackground", "color", colors.black)
+List:addProperty("selectedForeground", "color", colors.cyan)
+List:combineProperty("selectedColor", "selectedBackground", "selectedForeground")
 List:addProperty("scrollIndex", "number", 1, nil, function(self, value, sendToOthers)
     if (sendToOthers ~= false) then
         for _, v in pairs(self:getConnectedLists()) do
@@ -95,11 +99,9 @@ function List:render()
     VisualElement.render(self)
     local w, h = self:getSize()
     local items = self:getItems()
-    local itemsBg = self:getItemsBackground()
-    local itemsFg = self:getItemsForeground()
     local scrollIndex = self:getScrollIndex()
-    local selectionBg, selectionFg = self:getSelectionColor()
-    local selection = self:getSelection()
+    local selectedBg, selectedFg = self:getSelectedColor()
+    local selectable = self:getSelectable()
     local spacing = self:getSpacing()
     local align = self:getAlign()
 
@@ -108,22 +110,22 @@ function List:render()
         local item = items[index]
         if item then
             if (align == "right") then
-                self:addText(w - #item + 1 - spacing, i, item)
+                self:addTxt(w - #item.label + 1 - spacing, i, item.label)
             elseif (align == "center") then
-                self:addText(math.floor((w - #item) / 2) + 1, i, item)
+                self:addTxt(math.floor((w - #item.label) / 2) + 1, i, item.label)
             else
-                self:addText(1 + spacing, i, item)
+                self:addTxt(1 + spacing, i, item.label)
             end
-            if (itemsBg[index]) then
-                self:addBg(1, i, tHex[itemsBg[index]]:rep(w))
+            if (item.background) then
+                self:addBg(1, i, tHex[item.background]:rep(w))
             end
-            if (itemsFg[index]) then
-                self:addFg(1, i, tHex[itemsFg[index]]:rep(w))
+            if (item.foreground) then
+                self:addFg(1, i, tHex[item.foreground]:rep(w))
             end
-            if (selection) then
-                if self:getSelectionState(index) then
-                    self:addBg(1, i, tHex[selectionBg]:rep(w))
-                    self:addFg(1, i, tHex[selectionFg]:rep(w))
+            if (selectable) then
+                if self:isItemSelected(index) then
+                    self:addBg(1, i, tHex[selectedBg]:rep(w))
+                    self:addFg(1, i, tHex[selectedFg]:rep(w))
                 end
             end
         end
@@ -152,8 +154,8 @@ function List:connect(list, ignSettings, sendToOthers)
         list:connect(self, true, false)
     end
     if not (ignSettings) then
-        list:setSelection(self:getSelection())
-        list:setMultiSelection(self:getMultiSelection())
+        list:setSelectable(self:getSelectable())
+        list:setMultiSelectable(self:getMultiSelectable())
         list:setAutoScroll(self:getAutoScroll())
         list:setSelectedIndex(self:getSelectedIndex(), false)
         list:setScrollIndex(self:getScrollIndex(), false)
@@ -181,14 +183,14 @@ function List:disconnect(list, sendToOthers)
     return self
 end
 
---- Returns the selection state of the item at the given index.
+--- Returns the selected state of the item at the given index.
 ---@param self List The element itself
 ---@param index number The index of the item.
 ---@return boolean
-function List:getSelectionState(index)
+function List:isItemSelected(index)
     expect(1, self, "table")
     expect(2, index, "number")
-    if (self:getMultiSelection()) then
+    if (self:getMultiSelectable()) then
         local selectedIndex = self:getSelectedIndex()
         for i, v in ipairs(selectedIndex) do
             if v == index then
@@ -205,21 +207,21 @@ end
 
 --- Adds an item to the list.
 ---@param self List The element itself
----@param item string The item to add.
+---@param label string label for the item to add
+---@param value any value for the item to add
 ---@param bg? integer The background color of the item.
 ---@param fg? integer The foreground color of the item.
-function List:addItem(item, bg, fg)
+function List:addItem(label, value, bg, fg)
     expect(1, self, "table")
-    expect(2, item, "string")
-    expect(3, bg, "number", "nil")
-    expect(4, fg, "number", "nil")
-    table.insert(self.items, item)
-    if (bg ~= nil) then
-        table.insert(self.itemsBackground, bg or self:getBackground())
-    end
-    if (fg ~= nil) then
-        table.insert(self.itemsForeground, fg or self:getForeground())
-    end
+    expect(2, label, "string")
+    expect(4, bg, "color", "nil")
+    expect(5, fg, "color", "nil")
+    table.insert(self.items, {
+        label = label,
+        value = value,
+        background = colors[bg] and colors[bg] or bg or self:getBackground(),
+        foreground = colors[fg] and colors[fg] or fg or self:getForeground()
+    })
     if (self:getAutoScroll()) then
         if (#self:getItems() > self:getHeight()) then
             self:setScrollIndex(#self:getItems() - self:getHeight() + 1)
@@ -237,10 +239,10 @@ end
 function List:updateColor(index, fg, bg)
     expect(1, self, "table")
     expect(2, index, "number")
-    expect(3, fg, "number", "nil")
-    expect(4, bg, "number", "nil")
-    self.itemsBackground[index] = bg or self:getBackground()
-    self.itemsForeground[index] = fg or self:getForeground()
+    expect(3, fg, "color", "nil")
+    expect(4, bg, "color", "nil")
+    self.items[index].background = colors[bg] and colors[bg] or bg or self:getBackground()
+    self.items[index].foreground = colors[fg] and colors[fg] or fg or self:getForeground()
     self:updateRender()
     return self
 end
@@ -255,8 +257,6 @@ function List:removeItem(item)
     for i, v in ipairs(self.items) do
         if v == item then
             table.remove(self.items, i)
-            table.remove(self.itemsBackground, i)
-            table.remove(self.itemsForeground, i)
             if (self:getAutoScroll()) then
                 if (#self:getItems() > self:getHeight()) then
                     self:setScrollIndex(#self:getItems() - self:getHeight() + 1)
@@ -326,7 +326,7 @@ end
 ---@return table
 function List:getSelectedItems()
     expect(1, self, "table")
-    if (self:getMultiSelection()) then
+    if (self:getMultiSelectable()) then
         local items = self:getItems()
         local selectedItems = {}
         for i, v in ipairs(self:getSelectedIndex()) do

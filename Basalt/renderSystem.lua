@@ -46,12 +46,9 @@ return function(drawTerm)
         for currentY = 1, height do
             renderData[currentY] = renderData[currentY] or {}
             cache[currentY] = cache[currentY] or {}
-            renderData[currentY][1] = sub(renderData[currentY][1] == nil and emptyText or renderData[currentY][1] ..
-                                              emptyText:sub(1, width - renderData[currentY][1]:len()), 1, width)
-            renderData[currentY][2] = sub(renderData[currentY][2] == nil and emptyFG or renderData[currentY][2] ..
-                                              emptyFG:sub(1, width - renderData[currentY][2]:len()), 1, width)
-            renderData[currentY][3] = sub(renderData[currentY][3] == nil and emptyBG or renderData[currentY][3] ..
-                                              emptyBG:sub(1, width - renderData[currentY][3]:len()), 1, width)
+            renderData[currentY][1] = sub(renderData[currentY][1] == nil and emptyText or renderData[currentY][1] .. emptyText:sub(1, width - renderData[currentY][1]:len()), 1, width)
+            renderData[currentY][2] = sub(renderData[currentY][2] == nil and emptyFG or renderData[currentY][2] .. emptyFG:sub(1, width - renderData[currentY][2]:len()), 1, width)
+            renderData[currentY][3] = sub(renderData[currentY][3] == nil and emptyBG or renderData[currentY][3] .. emptyBG:sub(1, width - renderData[currentY][3]:len()), 1, width)
             modifiedLines[currentY] = true
         end
     end
@@ -80,8 +77,7 @@ return function(drawTerm)
                         newCacheFG = newCacheFG .. cSub(oldCache[2], x + #t, width)
                         newCacheBG = newCacheBG .. cSub(oldCache[3], x + #t, width)
                     end
-                    if (renderData[y][1] ~= newCacheT or renderData[y][2] ~= newCacheFG or renderData[y][3] ~=
-                        newCacheBG) then
+                    if (renderData[y][1] ~= newCacheT or renderData[y][2] ~= newCacheFG or renderData[y][3] ~= newCacheBG) then
                         renderData[y][1] = newCacheT
                         renderData[y][2] = newCacheFG
                         renderData[y][3] = newCacheBG
@@ -118,7 +114,7 @@ return function(drawTerm)
             setCache(3, x, y, colorStr)
         end,
 
-        setText = function(x, y, text)
+        setTxt = function(x, y, text)
             setCache(1, x, y, text)
         end,
 

@@ -32,9 +32,9 @@ function Menubar:mouse_click(button, x, y)
         if (button == 1) then
             local cumulativeWidth = self:getX()
             for i = self.scrollIndex, #self.items do
-                local itemWidth = #self.items[i] + self.spacing
+                local itemWidth = #self.items[i].label + self.spacing
                 if x >= cumulativeWidth and x < cumulativeWidth + itemWidth then
-                    self.selectedIndex = i
+                    self:setSelectedIndex(i)
                     self:fireEvent("change", self.items[i])
                     break
                 end
@@ -51,18 +51,18 @@ function Menubar:render()
     local currentIndex = self.scrollIndex
     local currentX = 1
     local width = self:getWidth()
-    self:addText(1, 1, (" "):rep(width))
+    self:addTxt(1, 1, (" "):rep(width))
     self:addBg(1, 1, tHex[self:getBackground()]:rep(width))
     self:addFg(1, 1, tHex[self:getForeground()]:rep(width))
     while currentX <= width and currentIndex <= #self.items do
-        local item = self.items[currentIndex]
-        if currentX + #item - 1 + self.spacing <= width then
-            self:addText(currentX, 1, item)
-            if currentIndex == self.selectedIndex then
-                self:addBg(currentX, 1, tHex[self:getSelectionBackground()]:rep(#item))
-                self:addFg(currentX, 1, tHex[self:getSelectionForeground()]:rep(#item))
+        local itemLabel = self.items[currentIndex].label
+        if currentX + #itemLabel - 1 + self.spacing <= width then
+            self:addTxt(currentX, 1, itemLabel)
+            if currentIndex == self:getSelectedIndex() then
+                self:addBg(currentX, 1, tHex[self:getSelectedBackground()]:rep(#itemLabel))
+                self:addFg(currentX, 1, tHex[self:getSelectedForeground()]:rep(#itemLabel))
             end
-            currentX = currentX + #item + self.spacing
+            currentX = currentX + #itemLabel + self.spacing
         else
             break
         end
@@ -91,12 +91,12 @@ function Menubar:getVisibleItems()
     local currentIndex = self.scrollIndex
     local currentWidth = 1
     while currentWidth <= self:getWidth() and currentIndex <= #self.items do
-        local item = self.items[currentIndex]
-        if currentWidth + #item - 1 + self.spacing <= self:getWidth() then
+        local itemLabel = self.items[currentIndex].label
+        if currentWidth + #itemLabel - 1 + self.spacing <= self:getWidth() then
             visibleItems = visibleItems + 1
-            currentWidth = currentWidth + #item + self.spacing
+            currentWidth = currentWidth + #itemLabel + self.spacing
         else
-            if currentWidth + #item - 1 <= self:getWidth() then
+            if currentWidth + #itemLabel - 1 <= self:getWidth() then
                 visibleItems = visibleItems + 1
             end
             break

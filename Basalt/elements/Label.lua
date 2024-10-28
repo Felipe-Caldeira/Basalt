@@ -78,11 +78,11 @@ function Label:render()
         local height = self:getHeight()
         for i, line in ipairs(lines) do
             if (i <= height) then
-                self:addText(1, i, line)
+                self:addTxt(1, i, line)
             end
         end
     else
-        self:addText(1, 1, text)
+        self:addTxt(1, 1, text)
     end
 end
 

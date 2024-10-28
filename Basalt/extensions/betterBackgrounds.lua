@@ -16,7 +16,7 @@ function bbgExtension.init(original)
                 local width, height = self:getSize()
                 bg = bg:sub(1, 1)
                 for i = 1, height do
-                    self:addText(1, i, bg:rep(width))
+                    self:addTxt(1, i, bg:rep(width))
                 end
             end
         end
