@@ -39,7 +39,7 @@ local function processString(str, env)
     if (f == nil) then
         error(str .. " - is not a valid dynamic value string")
     end
-    return f()
+    return math.floor(f() + 0.5)
 end
 
 local function dynamicValue(element, name, dynamicString)
