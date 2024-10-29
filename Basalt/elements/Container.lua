@@ -48,7 +48,7 @@ end)
 Container:addProperty("yOffset", "number", 0, nil, function(self, value)
     self:forceVisibleChildrenUpdate()
 end)
-Container:combineProperty("Offset", "xOffset", "yOffset")
+Container:combineProperty("offset", "xOffset", "yOffset")
 
 local sub, max = string.sub, math.max
 

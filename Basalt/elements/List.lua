@@ -62,7 +62,7 @@ List:addProperty("selectedIndex", "table", {}, nil,
     end)
 List:addProperty("selectedBackground", "color", colors.black)
 List:addProperty("selectedForeground", "color", colors.cyan)
-List:combineProperty("selectedColor", "selectedBackground", "selectedForeground")
+List:combineProperty("selectedColors", "selectedBackground", "selectedForeground")
 List:addProperty("scrollIndex", "number", 1, nil, function(self, value, sendToOthers)
     if (sendToOthers ~= false) then
         for _, v in pairs(self:getConnectedLists()) do
@@ -100,7 +100,7 @@ function List:render()
     local w, h = self:getSize()
     local items = self:getItems()
     local scrollIndex = self:getScrollIndex()
-    local selectedBg, selectedFg = self:getSelectedColor()
+    local selectedBg, selectedFg = self:getSelectedColors()
     local selectable = self:getSelectable()
     local spacing = self:getSpacing()
     local align = self:getAlign()

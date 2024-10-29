@@ -291,10 +291,13 @@ function Element:combineProperty(name, ...)
     self["set" .. name] = function(self, ...)
         expect(1, self, "table")
         local values = {...}
+        if #values == 1 and type(values[1]) == "table" then
+            values = values[1]
+        end
         for k, v in pairs(args) do
             local propertyType = self:getPropertyType(v)
             if (propertyType ~= nil) then
-                expect(k + 1, values[k], self:getPropertyType(v), "function", "dynValue")
+                expect(k + 1, values[k], propertyType, "function", "dynValue")
             end
             self["set" .. v:gsub("^%l", string.upper)](self, values[k])
         end

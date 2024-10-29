@@ -7,21 +7,23 @@ local function openDebugPanel()
     local mainFrame = debug.basalt.getMainFrame()
     local id = mainFrame:getId()
     if (debug.frames[id] == nil) then
-        debug.frames[id] = {}
-        debug.frames[id].window = mainFrame:addMovableFrame():setSize(45, 14):setBackground(colors.cyan):setZ(100):setVisible(false)
-        debug.frames[id].window:addLabel():setText("Debug Log"):setPosition(1, 1):setSize(45, 1):setForeground(colors.cyan):setBackground(colors.black)
-        debug.frames[id].debugLog = debug.frames[id].window:addList():setPosition(2, 3):setSize(42, 12):setBackground(colors.white):setForeground(colors.black):setSelectedColor(colors.white, colors.black)
-        debug.frames[id].closeButton = debug.frames[id].window:addButton():setForeground(colors.black):setBackground(colors.red):setSize(1, 1):setText("x"):setPosition("{parent.w}", 1):onClick(function()
-            debug.frames[id].window:setVisible(false)
+        local df = {}
+        df.window = mainFrame:addMovableFrame({size={45, 15}, background='cyan', z=100, visible=false})
+        df.window:addLabel({text="Debug Log", x=1, y=1, size={45, 1}, colors={'black', 'cyan'}})
+        df.debugLog = df.window:addList({x=2, y=3, size={43, 12}, colors={'white', 'black'}, selectable=false})
+        df.closeButton = df.window:addButton({colors={'red', 'black'}, size={1, 1}, text='x', x='{parent.w}', y=1}):onClick(function()
+            df.window:setVisible(false)
         end)
-        debug.frames[id].label = mainFrame:addLabel():setBackground(colors.black):setForeground(colors.white):setVisible(false):onClick(function()
-            debug.frames[id].window:setVisible(not debug.frames[id].window:getVisible())
+        df.label = mainFrame:addLabel({colors={'black', 'white'}, visible=false}):onClick(function()
+            df.window:setVisible(not df.window:getVisible())
         end)
-        if (debug.basalt.extensionExists("borders")) then
-            debug.frames[id].window:setBorder(true)
-        end
-        debug.frames[id].window.__debugElement = true
-        debug.frames[id].label.__debugElement = true
+        df.clearButton = df.window:addButton({background='yellow', size={5, 1}, text="Clear", x='{parent.w - 4}', y='{parent.h}'}):onClick(function()
+            df.debugLog:clear()
+            df.label:setVisible(false)
+        end)
+        df.window.__debugElement = true
+        df.label.__debugElement = true
+        debug.frames[id] = df
     end
     return debug.frames[id]
 end

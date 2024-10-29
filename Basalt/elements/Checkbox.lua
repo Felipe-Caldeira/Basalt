@@ -13,7 +13,7 @@ end)
 Checkbox:addProperty("checkedSymbol", "string", "\42")
 Checkbox:addProperty("checkedColor", "color", colors.white)
 Checkbox:addProperty("checkedBgColor", "color", colors.black)
-Checkbox:combineProperty("Symbol", "checkedSymbol", "checkedColor", "checkedBgColor")
+Checkbox:combineProperty("symbol", "checkedSymbol", "checkedColor", "checkedBgColor")
 
 Checkbox:addListener("check", "checked_value")
 
